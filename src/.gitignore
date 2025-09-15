@@ -1,0 +1,32 @@
+# === Node / Vite build ===
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# === Logs & debug ===
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# === Env files (⚠️ clés Supabase / Stripe / etc.) ===
+.env
+.env.*
+!.env.example   # garde un fichier exemple vide pour guider les devs
+
+# === IDE / Editor ===
+.vscode/
+.idea/
+*.sw?
+.DS_Store
+Thumbs.db
+
+# === Netlify local ===
+.netlify/
+
+# === Supabase local ===
+supabase/.branches
+supabase/.temp
+supabase/functions/.netlify/
