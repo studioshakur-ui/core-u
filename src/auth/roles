@@ -1,0 +1,12 @@
+export const ROLES = { DIREZIONE:'direzione', MANAGER:'manager', CAPO:'capo' }
+
+export function readRole(session){
+  return session?.user?.app_metadata?.role || ''
+}
+export function readManagerScope(session){
+  const arr = session?.user?.app_metadata?.manager_scope
+  return Array.isArray(arr) ? arr : []
+}
+export function readCapoTeam(session){
+  return session?.user?.app_metadata?.capo_team_id || ''
+}
