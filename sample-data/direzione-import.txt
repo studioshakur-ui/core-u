@@ -1,0 +1,3 @@
+IMP-001|Apparato Motore - Ponte A|in corso|35
+IMP-002|Quadri Elettrici - Ponte B|in corso|60
+IMP-003|Collegamenti Cabina 12|in ritardo|20

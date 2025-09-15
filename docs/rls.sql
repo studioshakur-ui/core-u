@@ -1,0 +1,11 @@
+-- SPEC RLS (Postgres/Supabase) — Capo vede solo la sua squadra
+-- 1) Enable RLS
+-- ALTER TABLE reportini ENABLE ROW LEVEL SECURITY;
+-- 2) Policy: Capo può leggere i reportini della propria squadra
+-- CREATE POLICY capo_read ON reportini
+-- FOR SELECT USING (exists (
+--   select 1 from teams t
+--   where t.id = reportini.team_id
+--   and t.capo_id = auth.uid()
+-- ));
+-- 3) Manager/Direzione policy più ampia...
