@@ -7,3 +7,4 @@ npm i
 npm run dev
 ```
 Apri `/#/` (HashRouter). Dati demo in `sample-data/`.
+"# core-u" 
