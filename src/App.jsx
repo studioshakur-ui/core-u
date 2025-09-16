@@ -3,8 +3,7 @@ import { Routes, Route, NavLink, useNavigate } from "react-router-dom"
 import { supabase } from "./lib/supabaseClient"
 import { useSession } from "./hooks/useSession"
 import { readRole, ROLES } from "./auth/roles"
-// src/App.jsx
-import React from 'react'
+
 
 
 // Pages
