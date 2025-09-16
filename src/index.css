@@ -2,27 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tokens */
-:root {
-  --core-accent: #00ff9c;
-}
+/* tokens */
+:root{ --core-accent:#00ff9c; }
 
-/* Primitives */
-@layer components {
-  .btn {
-    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-medium transition focus:outline-none;
-  }
-  .btn-primary {
-    background: var(--core-accent);
-    color: #0b0b0b;
-    box-shadow: 0 10px 25px rgba(0,255,156,.25);
-  }
-  .btn-primary:hover { filter: brightness(.96); transform: translateY(-1px); }
-  .btn-ghost {
-    @apply border border-white/25 text-white/90 hover:bg-white/10;
-  }
-  .card {
-    @apply relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-5 text-white;
-    box-shadow: 0 10px 30px rgba(0,0,0,.25);
-  }
+/* boutons/cartes (si tu ne les as pas encore) */
+@layer components{
+  .btn{@apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-medium transition focus:outline-none}
+  .btn-primary{ background:var(--core-accent); color:#0b0b0b; box-shadow:0 10px 25px rgba(0,255,156,.25) }
+  .btn-primary:hover{ filter:brightness(.96); transform:translateY(-1px) }
+  .btn-ghost{@apply border border-white/25 text-white/90 hover:bg-white/10}
+  .card{@apply relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-5 text-white; box-shadow:0 10px 30px rgba(0,0,0,.25)}
 }
