@@ -3,6 +3,22 @@ import { Routes, Route, NavLink } from "react-router-dom";
 import { supabase } from "./lib/supabaseClient";
 import { useSession } from "./hooks/useSession";
 import { readRole, ROLES } from "./auth/roles";
+// src/App.jsx (ou la page d’accueil)
+import Hero from "./components/Hero.jsx";
+
+export default function App() {
+  return (
+    <main className="bg-[#0f1117] text-white">
+      <Hero
+        // tu peux remplacer par tes propres assets réalistes
+        videoSrc="/assets/hero.mp4"
+        imageSrc="/assets/hero.jpg"
+      />
+      {/* … tes autres sections */}
+    </main>
+  );
+}
+
 
 /* ===================== NAV PREMIUM ===================== */
 function NavBar({ onOpenLogin }) {
