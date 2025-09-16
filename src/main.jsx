@@ -1,14 +1,12 @@
-import ErrorBoundary from './components/ErrorBoundary.jsx'
-// src/main.jsx
-import React from 'react'
+import React from "react"
+import ReactDOM from "react-dom/client"
+import { HashRouter } from "react-router-dom"
+import App from "./App.jsx"
 
-// ...
-root.render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HashRouter>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
+      <App />
     </HashRouter>
   </React.StrictMode>
 )
