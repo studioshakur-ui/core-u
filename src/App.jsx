@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Routes, Route, NavLink } from "react-router-dom";
-import { supabase } from "./lib/supabaseClient";        // garde ton client existant
-import { useSession } from "./hooks/useSession";        // garde ton hook existant
-import { readRole, ROLES } from "./auth/roles";         // garde tes rôles
+import { supabase } from "./lib/supabaseClient";
+import { useSession } from "./hooks/useSession";
+import { readRole, ROLES } from "./auth/roles";
 
-/* ===================== NAV PREMIUM (blur) ===================== */
+/* ===================== NAV PREMIUM ===================== */
 function NavBar({ onOpenLogin }) {
   const { session } = useSession() || {};
   const role = (() => { try { return readRole?.(session) } catch { return null } })();
@@ -20,10 +20,8 @@ function NavBar({ onOpenLogin }) {
           CORE
         </a>
 
-        {/* nav publique */}
         <NavLink to="/demo" className={link}>Demo</NavLink>
 
-        {/* nav par rôles (affiche seulement si connecté avec rôle) */}
         {role && <NavLink to="/direzione" className={link}>Direzione</NavLink>}
         {[ROLES.MANAGER, ROLES.DIREZIONE].includes(role) && <NavLink to="/manager" className={link}>Manager</NavLink>}
         {[ROLES.CAPO, ROLES.MANAGER, ROLES.DIREZIONE].includes(role) && <NavLink to="/capo" className={link}>Capo</NavLink>}
@@ -44,39 +42,26 @@ function NavBar({ onOpenLogin }) {
   );
 }
 
-/* ===================== HERO VIDÉO ===================== */
-/* Place la vidéo ici: public/assets/core-hero.mp4 (réaliste chantier) */
+/* ===================== HERO AVEC IMAGE ===================== */
 function Hero() {
   return (
-    <section className="relative h-[82vh] min-h-[560px] overflow-hidden">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
+    <section className="relative h-[80vh] min-h-[520px] overflow-hidden">
+      <img
+        src="/assets/hero-ship.jpg"   // mets une image réaliste ici
+        alt="Shipyard"
         className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src="/assets/core-hero.mp4" type="video/mp4" />
-      </video>
-
-      {/* overlay dégradé sombre */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/20" />
-
-      {/* contenu */}
+      />
+      <div className="absolute inset-0 bg-black/60" />
       <div className="relative h-full max-w-6xl mx-auto px-4 flex flex-col items-center justify-center text-center text-white">
         <img src="/assets/logo-core.png" alt="CORE" className="w-24 h-24 mb-4 opacity-95" />
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight">CORE</h1>
         <p className="mt-3 text-lg md:text-2xl tracking-widest text-white/80">
           CONTROLLA • ORGANIZZA • RIPORTA • ESEGUI
         </p>
-
         <div className="mt-8 flex items-center gap-3">
           <a href="#/demo" className="btn btn-primary">Inizia la Demo</a>
           <a href="#main" className="btn btn-ghost">Scopri</a>
         </div>
-
-        {/* watermark léger “premium” */}
-        <div className="absolute bottom-6 right-6 text-xs text-white/40">v5</div>
       </div>
     </section>
   );
@@ -154,7 +139,6 @@ function LoginModal({ open, onClose }) {
           </div>
 
           {msg && <p className={"text-sm " + (msg.startsWith("✅") ? "text-emerald-400" : "text-rose-400")}>{msg}</p>}
-          <p className="text-xs text-white/50">Riceverai un link via email. Cliccalo per collegarti.</p>
         </form>
       </div>
     </div>
@@ -167,16 +151,13 @@ export default function App() {
   return (
     <>
       <NavBar onOpenLogin={() => setLoginOpen(true)} />
-      <main className="pt-14"> {/* offset de la nav fixe */}
+      <main className="pt-14">
         <Hero />
         <Features />
       </main>
-
-      {/* routes existantes si tu veux (tu peux brancher tes pages actuelles) */}
       <Routes>
         <Route path="/demo" element={<div />} />
       </Routes>
-
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
   );
