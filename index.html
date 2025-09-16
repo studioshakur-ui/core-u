@@ -3,19 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CORE v5 ULTIMATE</title>
-    <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#7c3aed"/>
-    <link rel="icon" type="image/png" href="/favicon.png">
+    <title>CORE v5</title>
   </head>
-  <body class="bg-surface text-ink">
-    <a class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 bg-white border p-2 rounded-lg" href="#main">Salta al contenuto</a>
-    <div id="root"></div>
+  <body>
+    <a class="skip-to-content-link" href="#main">Salta al contenuto</a>
+
+    <!-- Fallback visible si React ne monte pas -->
+    <div id="root">
+      <div style="color:#fff;background:#000;padding:12px;font-family:system-ui">
+        Boot… (si ceci reste, l'app ne s'est pas montée)
+      </div>
+    </div>
+
+    <!-- Watchdog: affiche une erreur si React ne démarre pas -->
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
-      }
+      (function () {
+        function show(msg) {
+          var el = document.getElementById('root');
+          if (!el) return;
+          el.innerHTML =
+            '<div style="color:#fff;background:#000;padding:16px;line-height:1.4;font-family:system-ui">' +
+            '<b>⚠️ Boot error</b><br>' + msg +
+            '<br><br><small>Astuce: vide le cache du site puis recharge.</small></div>';
+        }
+        window.addEventListener('error', function (e) {
+          show('JS error: ' + (e && e.message ? e.message : 'inconnu'));
+        });
+        window.addEventListener('unhandledrejection', function (e) {
+          show('Promise error: ' + (e && e.reason ? (e.reason.message || e.reason) : 'inconnu'));
+        });
+        setTimeout(function () {
+          if (!window.__CORE_BOOT_OK__) show('Timeout: React ne s’est pas monté.');
+        }, 3000);
+      })();
     </script>
+
+    <!-- Entrée Vite -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
