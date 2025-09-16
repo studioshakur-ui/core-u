@@ -5,9 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CORE v5</title>
     <link rel="icon" href="/assets/logo-core.png" />
+    <style>
+      /* Fallback visible pendant le boot (et si React ne monte pas) */
+      body{margin:0;background:#0f1117;color:#fff;font-family:system-ui,Segoe UI,Roboto,Arial}
+      #boot-fallback{position:fixed;inset:0;padding:16px}
+      .tip{opacity:.6;font-size:.9rem}
+      .err{display:none;margin-top:8px;color:#ffb4b4}
+      .ok{display:none;margin-top:8px;color:#8cffc7}
+      a.skip{position:absolute;left:-9999px;top:-9999px}
+      a.skip:focus{left:8px;top:8px;background:#111;color:#fff;padding:8px;border-radius:8px}
+    </style>
   </head>
-  <body class="bg-[#0f1117]">
+  <body>
+    <a class="skip" href="#root">Salta al contenuto</a>
+
+    <div id="boot-fallback">
+      <div>⏳ Avvio…</div>
+      <div id="boot-msg" class="tip">Se resta nero, il tuo browser userà il bundle “legacy”.</div>
+      <div id="boot-ok" class="ok">✅ React montato.</div>
+      <div id="boot-err" class="err"></div>
+    </div>
+
     <div id="root"></div>
+
+    <!-- Watchdog: si React ne monte pas, on affiche l’erreur -->
+    <script>
+      (function () {
+        const start = Date.now();
+        const timeout = setTimeout(() => {
+          const e = document.getElementById('boot-err');
+          e.style.display = 'block';
+          e.textContent = '⚠️ Timeout: React non si è montato.';
+        }, 4000);
+
+        window.__react_mounted__ = () => {
+          clearTimeout(timeout);
+          document.getElementById('boot-ok').style.display = 'block';
+          setTimeout(()=>{ document.getElementById('boot-fallback').style.display = 'none'; }, 300);
+        };
+
+        // log d’erreurs JS (utile sur mobile)
+        window.addEventListener('error', (ev) => {
+          const e = document.getElementById('boot-err');
+          e.style.display = 'block';
+          e.textContent = 'Errore JS: ' + (ev.error && ev.error.message ? ev.error.message : ev.message);
+        });
+        window.addEventListener('unhandledrejection', (ev) => {
+          const e = document.getElementById('boot-err');
+          e.style.display = 'block';
+          e.textContent = 'Promise rejection: ' + (ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason));
+        });
+      })();
+    </script>
+
+    <!-- Entrée Vite (bundle moderne) -->
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Le plugin legacy injectera automatiquement le <script nomodule> de fallback -->
   </body>
 </html>
