@@ -6,7 +6,6 @@ export default defineConfig({
   plugins: [
     react(),
     legacy({
-      // génère un bundle fallback pour vieux Chrome/Android/Samsung, vieux Safari iOS
       targets: [
         "defaults",
         "not IE 11",
@@ -17,7 +16,7 @@ export default defineConfig({
         "Samsung >= 8"
       ],
       renderLegacyChunks: true,
-      polyfills: true,            // injecte les polyfills nécessaires
+      polyfills: true,
       modernPolyfills: true
     })
   ],
