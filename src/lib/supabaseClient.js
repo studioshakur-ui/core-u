@@ -1,11 +1,12 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
-const url = import.meta.env.VITE_SUPABASE_URL
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY
-console.log("VITE_SUPABASE_URL =", import.meta.env.VITE_SUPABASE_URL)
-console.log("VITE_SUPABASE_ANON_KEY present ?", !!import.meta.env.VITE_SUPABASE_ANON_KEY)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(url, key, {
-  auth: { persistSession: true, autoRefreshToken: true },
-  global: { headers: { 'x-core-client': 'core-v5' } }
-})
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
+});
