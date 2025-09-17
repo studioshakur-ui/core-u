@@ -1,88 +1,84 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useToast } from "./Toast.jsx";
 
-export default function LoginModal({ open, onClose }) {
+export default function LoginModal({ open, onClose }){
+  const [mode, setMode] = useState("login"); // login | signup | reset
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const dialogRef = useRef(null);
-  const inputRef = useRef(null);
+  const [pwd, setPwd] = useState("");
+  const [busy, setBusy] = useState(false);
   const toast = useToast();
 
-  if (!open) return null;
+  if(!open) return null;
 
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") onClose?.(); };
-    const onClickOutside = (e) => {
-      if (dialogRef.current && !dialogRef.current.contains(e.target)) onClose?.();
-    };
-    document.addEventListener("keydown", onKey);
-    document.addEventListener("mousedown", onClickOutside);
-    setTimeout(() => inputRef.current?.focus(), 0);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("mousedown", onClickOutside);
-    };
-  }, [onClose]);
+  const close = ()=>{ if(!busy){ setMode("login"); setEmail(""); setPwd(""); onClose?.(); } };
 
-  async function onSubmit(e) {
-    e.preventDefault();
-    if (!email) return;
-    setLoading(true);
+  async function doLogin(){
+    if(!email || !pwd) return toast.error("Inserisci email e password.");
+    setBusy(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
+    setBusy(false);
+    if(error){ toast.error("Credenziali non valide."); return; }
+    toast.success("Benvenuto!");
+    close();
+  }
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin + "/#/" },
+  async function doSignup(){
+    if(!email || !pwd) return toast.error("Inserisci email e password.");
+    if(pwd.length < 12) return toast.error("Password minimo 12 caratteri.");
+    setBusy(true);
+    const { error } = await supabase.auth.signUp({ email, password: pwd });
+    setBusy(false);
+    if(error){ toast.error(error.message); return; }
+    toast.success("Account creato. Controlla l’email per confermare.");
+    setMode("login");
+  }
+
+  async function doReset(){
+    if(!email) return toast.error("Inserisci l’email.");
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + "/#/"
     });
-
-    setLoading(false);
-    if (error) {
-      toast.err?.("Errore: " + error.message);
-    } else {
-      toast.ok?.("Link inviato. Controlla la posta (anche spam).");
-      onClose?.();
-    }
+    setBusy(false);
+    if(error){ toast.error(error.message); return; }
+    toast.success("Email inviata. Controlla la posta.");
+    setMode("login");
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[60] grid place-items-center bg-black/60"
-      role="dialog" aria-modal="true" aria-labelledby="login-title"
-    >
-      <div
-        ref={dialogRef}
-        className="w-[92%] max-w-md rounded-2xl border border-white/10 bg-[#0b0f14]/90 backdrop-blur-xl p-6 text-white shadow-2xl"
-      >
+    <div className="modal-backdrop" onClick={close}>
+      <div className="modal-card" onClick={e=>e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Accesso">
         <div className="flex items-center justify-between">
-          <h3 id="login-title" className="text-lg font-semibold">Accedi</h3>
-          <button className="text-white/70 hover:text-white" onClick={onClose} aria-label="Chiudi">✕</button>
+          <div className="segmented">
+            <button className={mode==="login"?"on":""} onClick={()=>setMode("login")}>Login</button>
+            <button className={mode==="signup"?"on":""} onClick={()=>setMode("signup")}>Crea account</button>
+            <button className={mode==="reset"?"on":""} onClick={()=>setMode("reset")}>Password</button>
+          </div>
+          <button className="btn btn-ghost" onClick={close}>Chiudi</button>
         </div>
 
-        <form onSubmit={onSubmit} className="mt-4 space-y-4">
-          <div>
-            <label htmlFor="login-email" className="text-sm text-white/70">Email</label>
-            <input
-              id="login-email"
-              ref={inputRef}
-              type="email" required
-              value={email} onChange={(e) => setEmail(e.target.value)}
-              placeholder="nome.cognome@azienda.it"
-              className="mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 outline-none focus:ring-2 focus:ring-[--accent]"
-              autoComplete="email" inputMode="email"
-            />
-          </div>
+        <div className="mt-6 space-y-3">
+          <label className="field">
+            <span>Email</span>
+            <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="nome@azienda.it" />
+          </label>
 
-          <div className="flex items-center justify-between">
-            <button type="button" className="btn btn-ghost" onClick={onClose}>Chiudi</button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? "Invio…" : "Entra (Magic Link)"}
-            </button>
-          </div>
+          {mode!=="reset" && (
+            <label className="field">
+              <span>Password</span>
+              <input type="password" value={pwd} onChange={e=>setPwd(e.target.value)} placeholder="••••••••••••" />
+              {mode==="signup" && <small className="hint">Min 12 caratteri, maiuscola, numero e simbolo.</small>}
+            </label>
+          )}
+        </div>
 
-          <p className="text-xs text-white/55">
-            Riceverai un link via email. Cliccalo per collegarti.
-          </p>
-        </form>
+        <div className="mt-6 flex items-center gap-3">
+          {mode==="login"   && <button disabled={busy} className="btn btn-primary" onClick={doLogin}>Entra</button>}
+          {mode==="signup"  && <button disabled={busy} className="btn btn-primary" onClick={doSignup}>Crea</button>}
+          {mode==="reset"   && <button disabled={busy} className="btn btn-primary" onClick={doReset}>Invia link</button>}
+          <button className="btn btn-ghost" onClick={close}>Annulla</button>
+        </div>
       </div>
     </div>
   );
