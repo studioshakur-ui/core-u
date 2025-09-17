@@ -7,13 +7,15 @@
     "build": "vite build --debug",
     "preview": "vite preview"
   },
+  {
   "dependencies": {
-  "@supabase/supabase-js": "^2.45.4",
-  "papaparse": "^5.4.1",
-  "react": "^18.3.1",
-  "react-dom": "^18.3.1",
-  "react-router-dom": "^6.26.2"
-},
+    "@supabase/supabase-js": "^2.45.4",
+    "papaparse": "^5.4.1",
+    "zustand": "^4.5.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
   "devDependencies": {
     "vite": "^5.4.8",
     "@vitejs/plugin-react": "^4.3.1",
