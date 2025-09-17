@@ -1,5 +1,6 @@
 // src/pages/AdminUsers.jsx
 import { useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 
 export default function AdminUsers(){
   return (
@@ -12,17 +13,29 @@ export default function AdminUsers(){
   );
 }
 
+async function callFn(path, payload){
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || "";
+  const res = await fetch(path, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  const txt = await res.text();
+  if (!res.ok) throw new Error(txt);
+  try { return JSON.parse(txt); } catch { return txt; }
+}
+
 function CreateUserCard(){
   const [email,setEmail]=useState(""); const [pwd,setPwd]=useState(""); const [role,setRole]=useState("capo");
   const [msg,setMsg]=useState(""); const [err,setErr]=useState("");
   async function submit(e){
     e.preventDefault(); setMsg(""); setErr("");
     try{
-      const res=await fetch("/.netlify/functions/admin-create-user",{
-        method:"POST", headers:{ "content-type":"application/json" },
-        body:JSON.stringify({ email, password: pwd, role })
-      });
-      const t=await res.text(); if(!res.ok) throw new Error(t);
+      await callFn("/.netlify/functions/admin-create-user", { email, password: pwd, role });
       setMsg(`Creato utente ${email}`); setEmail(""); setPwd("");
     }catch(e){ setErr(e.message||String(e)); }
   }
@@ -50,7 +63,6 @@ function CreateUserCard(){
       <button className="btn btn-primary">Crea</button>
       {msg && <div className="text-emerald-400">{msg}</div>}
       {err && <div className="text-red-400">{err}</div>}
-      <p className="muted text-sm">L’utente potrà cambiare la password da “Password dimenticata”.</p>
     </form>
   );
 }
@@ -61,11 +73,7 @@ function SetRoleCard(){
   async function submit(e){
     e.preventDefault(); setMsg(""); setErr("");
     try{
-      const res=await fetch("/.netlify/functions/admin-set-role",{
-        method:"POST", headers:{ "content-type":"application/json" },
-        body:JSON.stringify({ email, role })
-      });
-      const t=await res.text(); if(!res.ok) throw new Error(t);
+      await callFn("/.netlify/functions/admin-set-role", { email, role });
       setMsg(`Ruolo aggiornato a ${role} per ${email}`);
     }catch(e){ setErr(e.message||String(e)); }
   }
@@ -98,11 +106,7 @@ function DeleteUserCard(){
   async function submit(e){
     e.preventDefault(); setMsg(""); setErr("");
     try{
-      const res=await fetch("/.netlify/functions/admin-delete-user",{
-        method:"POST", headers:{ "content-type":"application/json" },
-        body:JSON.stringify({ email })
-      });
-      const t=await res.text(); if(!res.ok) throw new Error(t);
+      await callFn("/.netlify/functions/admin-delete-user", { email });
       setMsg(`Utente ${email} eliminato`); setEmail("");
     }catch(e){ setErr(e.message||String(e)); }
   }
@@ -116,7 +120,6 @@ function DeleteUserCard(){
       <button className="btn btn-ghost">Elimina utente</button>
       {msg && <div className="text-emerald-400">{msg}</div>}
       {err && <div className="text-red-400">{err}</div>}
-      <p className="muted text-sm">L’eliminazione rimuove anche il profilo.</p>
     </form>
   );
 }
