@@ -10,19 +10,12 @@ export default function Login() {
   const [err, setErr] = useState("");
   const navigate = useNavigate();
 
-  // Si déjà connecté → redirige selon le rôle (évite de rester sur /login)
   useEffect(() => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user ?? null;
       if (!user) return;
-
-      const { data: p } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .maybeSingle();
-
+      const { data: p } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
       const role = p?.role ?? "capo";
       navigate(getHomeRoute(role), { replace: true });
     })();
@@ -31,14 +24,10 @@ export default function Login() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setErr("");
-
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/#/auth/callback`,
-      },
+      options: { emailRedirectTo: `${window.location.origin}/#/auth/callback` },
     });
-
     if (error) setErr(error.message);
     else setDone(true);
   };
@@ -47,8 +36,8 @@ export default function Login() {
     return (
       <div className="container-core">
         <div className="card space-y-2 max-w-lg">
-          <h1 className="text-xl font-semibold">Vérifie ta boîte mail</h1>
-          <p>Un lien de connexion a été envoyé. Clique-le pour entrer.</p>
+          <h1 className="text-xl font-semibold">Controlla la posta</h1>
+          <p>Ti abbiamo inviato un link di accesso. Cliccalo per entrare.</p>
         </div>
       </div>
     );
@@ -57,19 +46,16 @@ export default function Login() {
   return (
     <div className="container-core">
       <form onSubmit={onSubmit} className="card space-y-4 max-w-lg">
-        <h1 className="text-2xl font-semibold">Connexion</h1>
+        <h1 className="text-2xl font-semibold">Accesso</h1>
         <label className="block">
           <span className="block mb-1">Email</span>
           <input
-            type="email"
-            required
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
+            type="email" required value={email} onChange={(e)=>setEmail(e.target.value)}
             className="w-full rounded-xl bg-white/5 border border-white/15 px-4 py-2 outline-none focus:ring-2 focus:ring-white/30"
-            placeholder="you@company.com"
+            placeholder="nome@azienda.it"
           />
         </label>
-        <button type="submit" className="btn btn-primary">Recevoir un lien</button>
+        <button type="submit" className="btn btn-primary">Invia link di accesso</button>
         {err && <div className="text-red-400">{err}</div>}
       </form>
     </div>
