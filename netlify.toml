@@ -2,17 +2,17 @@
   command = "npm run build"
   publish = "dist"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 [[headers]]
   for = "/index.html"
   [headers.values]
-    cache-control = "no-cache, no-store, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/assets/*"
   [headers.values]
-    cache-control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[plugins]] # (assure-toi qu'aucun plugin de post-processing n'altère le bundle)
