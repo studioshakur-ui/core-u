@@ -1,28 +1,78 @@
 <!doctype html>
-<html lang="it">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b0b0b" />
+    <meta name="description" content="CORE v5 — Capo • Manager • Direzione" />
 
-    <!-- Anti-cache pour forcer la prise de la nouvelle index.html -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
+    <!-- Favicon (remplace si tu as tes assets) -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <title>CORE v5</title>
+
+    <style>
+      /* Reset minimal pour éviter les scrollbars au boot */
+      html, body, #root { height: 100%; }
+      html, body {
+        margin: 0;
+        background: #0b0b0b;
+        color: #eaeaea;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      /* Splash/fallback plein écran pendant le boot */
+      #boot-fallback {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: #0b0b0b;
+        color: #eaeaea;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        z-index: 2147483647;
+      }
+      .dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: currentColor; opacity: .7;
+        animation: bounce 1s infinite ease-in-out;
+      }
+      .dot:nth-child(2) { animation-delay: .15s; }
+      .dot:nth-child(3) { animation-delay: .30s; }
+      @keyframes bounce {
+        0%, 80%, 100% { transform: scale(0.66); opacity: .4; }
+        40% { transform: scale(1); opacity: 1; }
+      }
+    </style>
   </head>
   <body>
-    <!-- Fallback visible si React ne se monte pas -->
-    <a class="skip-to-content-link" href="#main">Salta al contenuto</a>
-    <div id="root">
-      <noscript>Abilita JavaScript per usare CORE.</noscript>
-      <!-- Watchdog minimal -->
-      <div id="watchdog" style="padding:8px;color:#f5a623;font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji';">
-        Avvio…<br />
-        <span style="color:#ffcc66">Se resta nero, ricarica la pagina.</span>
-      </div>
+    <!-- Fallback affiché tant que React n'a pas monté l'app -->
+    <div id="boot-fallback" aria-live="polite" aria-busy="true">
+      <span>Chargement…</span>
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
     </div>
 
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+    <!-- Point de montage React -->
+    <div id="root"></div>
+
+    <!-- Si JS est désactivé -->
+    <noscript>
+      Active JavaScript pour utiliser cette application.
+    </noscript>
+
+    <!-- Utilitaire: appelé après le premier render React pour masquer le fallback -->
+    <script>
+      window.__react_mounted__ = function () {
+        var el = document.getElementById("boot-fallback");
+        if (el) el.style.display = "none";
+      };
+
+      // Optionnel mais utile si un ancien Service Worke
