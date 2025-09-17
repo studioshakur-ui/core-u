@@ -1,14 +1,15 @@
-// src/main.jsx (ou App.jsx selon ta structure)
+// src/main.jsx
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import AppShell from "./AppShell"; // ta nav + <Outlet/>
+import { useEffect, useState } from "react";
+import { supabase } from "./lib/supabaseClient";
+
+import AppShell from "./AppShell";
 import Login from "./pages/Login";
 import AuthCallback from "./pages/AuthCallback";
 import Capo from "./pages/Capo";
 import Manager from "./pages/Manager";
 import Direzione from "./pages/Direzione";
-import { useEffect, useState } from "react";
-import { supabase } from "./lib/supabaseClient";
 import { getHomeRoute } from "./pages/AuthCallback";
 
 function RequireAuth({ children, accept }) {
@@ -18,10 +19,8 @@ function RequireAuth({ children, accept }) {
     let mounted = true;
 
     (async () => {
-      // 1) session au boot
       const { data: { session } } = await supabase.auth.getSession();
 
-      // 2) écoute les changements (login/logout)
       const { data: sub } = supabase.auth.onAuthStateChange((_evt, sess) => {
         setState((s) => ({ ...s, user: sess?.user ?? null }));
       });
@@ -30,12 +29,12 @@ function RequireAuth({ children, accept }) {
       let role = null;
 
       if (user) {
-        const { data: profile } = await supabase
+        const { data: p } = await supabase
           .from("profiles")
           .select("role")
           .eq("id", user.id)
           .maybeSingle();
-        role = profile?.role ?? "capo";
+        role = p?.role ?? "capo";
       }
 
       if (mounted) setState({ loading: false, user, role });
@@ -49,17 +48,27 @@ function RequireAuth({ children, accept }) {
   if (state.loading) return <div style={{ padding: 24 }}>Chargement…</div>;
   if (!state.user) return <Navigate to="/login" replace />;
 
-  // Si accept = ['manager'] etc.
   if (accept && !accept.includes(state.role)) {
     return <Navigate to={getHomeRoute(state.role)} replace />;
   }
+
   return children;
+}
+
+function AppBoot() {
+  // Masquer le fallback HTML (fin des Ctrl+Shift+R)
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.__react_mounted__) {
+      window.__react_mounted__();
+    }
+  }, []);
+  return <AppShell />;
 }
 
 createRoot(document.getElementById("root")).render(
   <HashRouter>
     <Routes>
-      <Route element={<AppShell />}>
+      <Route element={<AppBoot />}>
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
 
