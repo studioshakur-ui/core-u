@@ -7,18 +7,24 @@ import { supabase } from "./lib/supabaseClient";
 import { ToastProvider } from "./components/Toast.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 
-// Nettoyage de l’URL après auth
+/* 1) Désenregistre tout Service Worker résiduel (au cas où) */
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
+}
+
+/* 2) Nettoie l’URL (hash) après login Supabase */
 const cleanupUrl = () => {
   const h = window.location.hash || "";
   if (h.includes("access_token=") || h.includes("refresh_token=") || h.includes("type=")) {
     window.history.replaceState({}, document.title, window.location.origin + "/#/");
   }
 };
-supabase.auth.getSession().then(({ data:{ session } }) => { if (session) cleanupUrl(); });
+supabase.auth.getSession().then(({ data: { session } }) => { if (session) cleanupUrl(); });
 supabase.auth.onAuthStateChange((event) => {
   if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") cleanupUrl();
 });
 
+/* 3) Monte l’app avec les providers au-dessus d’App */
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HashRouter>
