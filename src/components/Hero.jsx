@@ -3,15 +3,30 @@ import React from "react";
 export default function Hero(){
   return (
     <section className="relative min-h-[68vh] md:h-[78vh] overflow-hidden">
-      <img src="/assets/hero.jpg" alt="Shipyard" className="absolute inset-0 w-full h-full object-cover" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/20" />
-      <div className="relative container-core h-full flex flex-col items-center justify-center text-center text-white">
-        <p className="text-[13px] uppercase tracking-[0.2em] text-white/70 mb-3">Pianificazione · Reporting · Controllo</p>
-        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">CORE</h1>
-        <p className="mt-3 text-lg md:text-2xl tracking-widest text-white/85">CONTROLLA • ORGANIZZA • RIPORTA • ESEGUI</p>
+      <img src="/assets/ship1.jpg" alt="" fetchpriority="high"
+           className="absolute inset-0 w-full h-full object-cover opacity-[.22]" />
+      <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_50%_-10%,rgba(139,92,246,.22),transparent_60%)]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[rgba(8,9,14,.85)] via-[rgba(8,9,14,.55)] to-transparent" />
+
+      <div className="relative container-core h-full flex flex-col items-center justify-center text-center">
+        <img src="/assets/brand/core-logo-dark.svg" alt="Core" className="brand-logo md:h-14" />
+        <h1 className="sr-only">CORE — Pianificazione • Reporting • Controllo</h1>
+
+        <p className="mt-6 text-3xl md:text-5xl font-extrabold tracking-tight text-white">
+          Controlla • Organizza • Riporta • Esegui
+        </p>
+
+        <p className="mt-4 text-lg md:text-xl text-white/80 max-w-3xl">
+          Pianificazione turni e cantieri con conflitti in tempo reale, rapportini capi e versionamento tecnico.
+        </p>
+
         <div className="mt-8 flex items-center gap-3">
-          <a href="#/demo" className="btn btn-primary focus-visible:ring-[--accent]">Inizia la demo</a>
+          <a href="#/demo" className="btn btn-primary">Inizia la demo</a>
           <a href="#main" className="btn btn-ghost">Scopri</a>
+        </div>
+
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center">
+          <span className="kbd">Premi <b>J</b> per scorrere</span>
         </div>
       </div>
     </section>
