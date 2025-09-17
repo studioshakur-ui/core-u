@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { getHomeRoute } from "../lib/routeUtils";
-import { parseAuthParamsFromUrl } from "../lib/urlAuthParams";
+import { parseAuthParamsFromUrl, cleanAuthUrl } from "../lib/urlAuthParams";
 
 export default function AuthCallback() {
   const [msg, setMsg] = useState("Verifica in corso…");
@@ -13,37 +13,58 @@ export default function AuthCallback() {
     let alive = true;
 
     (async () => {
-      const params = parseAuthParamsFromUrl();
-      // Si Supabase renvoie une erreur dans l'URL
-      if (params.error) {
-        setMsg(params.error_description || "Errore durante la verifica. Ripeti l’accesso.");
+      const p = parseAuthParamsFromUrl();
+
+      if (p.error) {
+        setMsg(p.error_description || "Errore durante la verifica. Ripeti l’accesso.");
         await sleep(1200);
         if (!alive) return;
+        cleanAuthUrl();
         navigate("/login", { replace: true });
         return;
       }
 
-      // Si on a un code (PKCE OAuth), on tente l'échange
-      if (params.code) {
-        try { await supabase.auth.exchangeCodeForSession(); } catch (e) { /* ignore, on continue */ }
+      // 1) PKCE / OAuth : ?code=...
+      if (p.code) {
+        try {
+          await supabase.auth.exchangeCodeForSession();
+        } catch (e) {
+          // On continue vers fallback; si ça marche pas, on affichera l'erreur
+        }
       }
 
-      // Attente robuste de la session (utile pour magic link avec access_token dans le hash)
-      const session = await waitForSession(40, 100); // 40 * 100ms = 4s max
+      // 2) Magic link (implicit): access_token + refresh_token (dans le hash le plus souvent)
+      if (p.access_token && p.refresh_token) {
+        try {
+          await supabase.auth.setSession({
+            access_token: p.access_token,
+            refresh_token: p.refresh_token,
+          });
+        } catch (e) {
+          // on laisse la boucle d’attente décider
+        }
+      }
+
+      // 3) Boucle d’attente de la session (max ~5s)
+      const session = await waitForSession(50, 100);
       if (!session) {
-        setMsg("Link non valido o scaduto. Ripeti l’accesso.");
-        await sleep(1200);
+        setMsg("Impossibile creare la sessione. Ripeti l’accesso.");
+        await sleep(1400);
         if (!alive) return;
+        cleanAuthUrl();
         navigate("/login", { replace: true });
         return;
       }
 
-      // Garantit/actualise le profilo
+      // 4) Garantisce/aggiorna il profilo (non tocca il ruolo)
       const user = session.user;
       await ensureProfile(user);
 
+      // 5) Legge il ruolo e redirige
       const role = await getUserRole(user.id);
+
       if (!alive) return;
+      cleanAuthUrl();
       navigate(getHomeRoute(role), { replace: true });
     })();
 
@@ -53,7 +74,7 @@ export default function AuthCallback() {
   return <div style={{ padding: 24 }}>{msg}</div>;
 }
 
-async function waitForSession(tries = 40, delayMs = 100) {
+async function waitForSession(tries = 50, delayMs = 100) {
   for (let i = 0; i < tries; i++) {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) return session;
@@ -75,11 +96,12 @@ async function ensureProfile(user) {
       id: user.id,
       email: user.email,
       role: "capo",
-    });
+    }).catch(()=>{});
   } else {
     await supabase.from("profiles")
       .update({ email: user.email })
-      .eq("id", user.id);
+      .eq("id", user.id)
+      .catch(()=>{});
   }
 }
 
