@@ -2,7 +2,7 @@
 export default function BrandLogo({ className = "", alt = "CORE v5" }) {
   return (
     <img
-      src="/branding/logo.svg"
+      src="/assets/logo-core.png"
       alt={alt}
       className={className}
       width={120}
