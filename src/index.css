@@ -2,14 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== TOKENS CORE ===== */
+/* ===== TOKEN ===== */
 :root{
   --bg:#0F1117;
   --panel:#11151D;
   --panel-2:#0B0F14;
   --stroke:rgba(255,255,255,.08);
-  --accent:#00FF9C;      /* CTA */
-  --accent-2:#1F6FEB;    /* Liens secondaires */
+  --accent:#00FF9C;
+  --accent-2:#1F6FEB;
   --text:#FFFFFF;
   --muted:rgba(255,255,255,.72);
 }
@@ -17,50 +17,35 @@
 /* ===== BASE ===== */
 @layer base{
   html, body, #root { height: 100%; }
-  body{
-    background:var(--bg);
-    color:var(--text);
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-  }
+  body{ background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
   h1,h2,h3{ letter-spacing:-0.02em; }
-  a{ color:var(--accent-2); }
-  a:hover{ filter: brightness(1.08); }
+  a{ color:var(--accent-2); } a:hover{ filter:brightness(1.08); }
 }
 
-/* ===== PRIMITIVES ===== */
+/* ===== COMPONENTI ===== */
 @layer components{
   .container-core{ @apply max-w-6xl mx-auto px-4; }
 
-  .btn{
-    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-medium transition
-           focus:outline-none focus-visible:ring-2;
-  }
-  .btn-primary{
-    background:var(--accent);
-    color:#0b0b0b;
-    box-shadow:0 10px 25px rgba(0,255,156,.25);
-  }
+  .btn{ @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-medium transition
+         focus:outline-none focus-visible:ring-2; }
+  .btn-primary{ background:var(--accent); color:#0b0b0b; box-shadow:0 10px 25px rgba(0,255,156,.25); }
   .btn-primary:hover{ filter:brightness(.96); transform:translateY(-1px); }
-  .btn-primary:focus-visible{ box-shadow:0 0 0 3px rgba(0,255,156,.35); }
-
   .btn-ghost{ @apply border border-white/20 text-white/90 hover:bg-white/10; }
   .btn-ghost:focus-visible{ @apply ring-white/60; }
 
-  .card{
-    @apply relative rounded-2xl border p-5 text-white;
-    background: var(--panel);         /* <-- valeurs arbitraires en CSS natif */
-    border-color: var(--stroke);      /* <-- idem */
-    box-shadow: 0 12px 30px rgba(0,0,0,.35);
-  }
+  .card{ @apply relative rounded-2xl border p-5 text-white;
+    background:var(--panel); border-color:var(--stroke); box-shadow:0 12px 30px rgba(0,0,0,.35); }
 
   .chip{ @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs border border-white/15 bg-white/10; }
 }
 
-/* ===== UTILS FACILES (optionnel) ===== */
+/* ===== UTILI ===== */
 @layer utilities{
   .muted { color: var(--muted); }
   .panel { background: var(--panel); }
-  .panel-2 { background: var(--panel-2); }
   .stroke { border-color: var(--stroke); }
 }
+
+/* Toast */
+.toast-host{ position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:8px; z-index:60; }
+.toast{ background:#0F172A; color:#fff; border:1px solid rgba(255,255,255,.1); padding:10px 12px; border-radius:12px; }
