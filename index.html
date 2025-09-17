@@ -1,11 +1,8 @@
 <!doctype html>
-<html lang="fr">
+<html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0b0b0b" />
     <meta name="description" content="CORE v5 — Capo • Manager • Direzione" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
@@ -14,54 +11,27 @@
     <title>CORE v5</title>
     <style>
       html, body, #root { height: 100%; }
-      html, body {
-        margin: 0;
-        background: #0b0b0b;
-        color: #eaeaea;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      #boot-fallback {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        background: #0b0b0b;
-        color: #eaeaea;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-          Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-        z-index: 2147483647;
-      }
-      .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: .7; animation: bounce 1s infinite ease-in-out; }
-      .dot:nth-child(2) { animation-delay: .15s; }
-      .dot:nth-child(3) { animation-delay: .30s; }
-      @keyframes bounce { 0%, 80%, 100% { transform: scale(0.66); opacity: .4; } 40% { transform: scale(1); opacity: 1; } }
+      html, body { margin: 0; background: #0b0b0b; color: #eaeaea;
+        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      #boot-fallback { position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+        gap:12px; background:#0b0b0b; color:#eaeaea; z-index:2147483647; }
+      .dot { width:8px; height:8px; border-radius:50%; background:currentColor; opacity:.7; animation:b 1s infinite; }
+      .dot:nth-child(2){ animation-delay:.15s } .dot:nth-child(3){ animation-delay:.3s }
+      @keyframes b { 0%,80%,100%{ transform:scale(.66); opacity:.4 } 40%{ transform:scale(1); opacity:1 } }
     </style>
   </head>
   <body>
     <div id="boot-fallback" aria-live="polite" aria-busy="true">
-      <span>Chargement…</span>
-      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span>Caricamento…</span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
     </div>
-
     <div id="root"></div>
-
-    <noscript>Active JavaScript pour utiliser cette application.</noscript>
-
+    <noscript>Attiva JavaScript per utilizzare questa applicazione.</noscript>
     <script>
-      window.__react_mounted__ = function () {
-        var el = document.getElementById("boot-fallback");
-        if (el) el.style.display = "none";
-      };
+      window.__react_mounted__ = function(){ var el = document.getElementById("boot-fallback"); if (el) el.style.display="none"; };
       if ("serviceWorker" in navigator && navigator.serviceWorker.getRegistrations) {
-        navigator.serviceWorker.getRegistrations().then(function (regs) {
-          regs.forEach(function (r) { r.unregister(); });
-        });
+        navigator.serviceWorker.getRegistrations().then(function (regs) { regs.forEach(function (r){ r.unregister(); });});
       }
     </script>
-
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
