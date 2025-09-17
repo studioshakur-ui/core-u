@@ -1,38 +1,95 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { HashRouter } from "react-router-dom";
-import App from "./App.jsx";
-import "./index.css";
+// src/main.jsx (ou App.jsx selon ta structure)
+import { createRoot } from "react-dom/client";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import AppShell from "./AppShell"; // ta nav + <Outlet/>
+import Login from "./pages/Login";
+import AuthCallback from "./pages/AuthCallback";
+import Capo from "./pages/Capo";
+import Manager from "./pages/Manager";
+import Direzione from "./pages/Direzione";
+import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabaseClient";
-import { ToastProvider } from "./components/Toast.jsx";
-import ErrorBoundary from "./components/ErrorBoundary.jsx";
+import { getHomeRoute } from "./pages/AuthCallback";
 
-/* 1) Désenregistre tout Service Worker résiduel (au cas où) */
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
+function RequireAuth({ children, accept }) {
+  const [state, setState] = useState({ loading: true, user: null, role: null });
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      // 1) session au boot
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // 2) écoute les changements (login/logout)
+      const { data: sub } = supabase.auth.onAuthStateChange((_evt, sess) => {
+        setState((s) => ({ ...s, user: sess?.user ?? null }));
+      });
+
+      let user = session?.user ?? null;
+      let role = null;
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle();
+        role = profile?.role ?? "capo";
+      }
+
+      if (mounted) setState({ loading: false, user, role });
+
+      return () => sub.subscription.unsubscribe();
+    })();
+
+    return () => { mounted = false; };
+  }, []);
+
+  if (state.loading) return <div style={{ padding: 24 }}>Chargement…</div>;
+  if (!state.user) return <Navigate to="/login" replace />;
+
+  // Si accept = ['manager'] etc.
+  if (accept && !accept.includes(state.role)) {
+    return <Navigate to={getHomeRoute(state.role)} replace />;
+  }
+  return children;
 }
 
-/* 2) Nettoie l’URL (hash) après login Supabase */
-const cleanupUrl = () => {
-  const h = window.location.hash || "";
-  if (h.includes("access_token=") || h.includes("refresh_token=") || h.includes("type=")) {
-    window.history.replaceState({}, document.title, window.location.origin + "/#/");
-  }
-};
-supabase.auth.getSession().then(({ data: { session } }) => { if (session) cleanupUrl(); });
-supabase.auth.onAuthStateChange((event) => {
-  if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") cleanupUrl();
-});
+createRoot(document.getElementById("root")).render(
+  <HashRouter>
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
 
-/* 3) Monte l’app avec les providers au-dessus d’App */
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <HashRouter>
-      <ToastProvider>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
-      </ToastProvider>
-    </HashRouter>
-  </React.StrictMode>
+        <Route
+          path="/capo"
+          element={
+            <RequireAuth accept={["capo","manager","direzione"]}>
+              <Capo />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/manager"
+          element={
+            <RequireAuth accept={["manager","direzione"]}>
+              <Manager />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/direzione"
+          element={
+            <RequireAuth accept={["direzione"]}>
+              <Direzione />
+            </RequireAuth>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Route>
+    </Routes>
+  </HashRouter>
 );
