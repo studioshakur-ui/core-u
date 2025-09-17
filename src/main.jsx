@@ -4,6 +4,16 @@ import { HashRouter } from "react-router-dom";
 import App from "./App.jsx";
 import "./index.css";
 import { supabase } from "./lib/supabaseClient";
+import { ToastProvider } from "./components/Toast.jsx";
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <HashRouter>
+      <ToastProvider>
+        <App />
+      </ToastProvider>
+    </HashRouter>
+  </React.StrictMode>
+);
 
 const cleanupUrl = () => {
   const h = window.location.hash || "";
