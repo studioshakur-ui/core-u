@@ -1,18 +1,50 @@
-import React from 'react'
-import { useCoreStore } from '../store/useCoreStore'
-export default function ToastHost(){
-  const { toasts, removeToast } = useCoreStore()
+import React, { createContext, useContext, useState, useCallback } from "react";
+
+const ToastCtx = createContext(null);
+
+export function ToastProvider({ children }) {
+  const [items, setItems] = useState([]);
+  const push = useCallback((t) => {
+    const id = crypto.randomUUID();
+    const next = { id, ...t };
+    setItems((xs) => [...xs, next]);
+    const ttl = t.ttl ?? 3500;
+    setTimeout(() => setItems((xs) => xs.filter((x) => x.id !== id)), ttl);
+  }, []);
+  const api = {
+    info: (msg, opts) => push({ type: "info", msg, ...opts }),
+    ok: (msg, opts) => push({ type: "ok", msg, ...opts }),
+    warn: (msg, opts) => push({ type: "warn", msg, ...opts }),
+    err: (msg, opts) => push({ type: "err", msg, ...opts }),
+  };
   return (
-    <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-[1000]" role="region" aria-live="polite">
-      {toasts.map(t=> (
-        <div key={t.id} className="bg-white border border-slate-200 rounded-xl shadow-e1 px-3 py-2 min-w-[260px]" role={t.type==='error'?'alert':'status'}>
-          <div className="font-medium">{t.title||'Info'}</div>
-          {t.message && <div className="text-sm text-slate-600">{t.message}</div>}
-          <div className="text-right mt-1">
-            <button className="text-xs text-slate-500 hover:text-slate-800 underline" onClick={()=>removeToast(t.id)}>fermer</button>
+    <ToastCtx.Provider value={api}>
+      {children}
+      <div className="pointer-events-none fixed inset-x-0 top-3 z-[80] flex flex-col items-center gap-2 px-2">
+        {items.map((t) => (
+          <div
+            key={t.id}
+            className={
+              "pointer-events-auto w-full max-w-md rounded-xl border px-4 py-3 shadow-xl backdrop-blur " +
+              (t.type === "ok"
+                ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-200"
+                : t.type === "warn"
+                ? "bg-amber-500/15 border-amber-500/30 text-amber-200"
+                : t.type === "err"
+                ? "bg-rose-500/15 border-rose-500/30 text-rose-200"
+                : "bg-white/10 border-white/20 text-white")
+            }
+          >
+            <div className="text-sm">{t.msg}</div>
           </div>
-        </div>
-      ))}
-    </div>
-  )
+        ))}
+      </div>
+    </ToastCtx.Provider>
+  );
+}
+
+export function useToast() {
+  const ctx = useContext(ToastCtx);
+  if (!ctx) throw new Error("useToast must be used within <ToastProvider/>");
+  return ctx;
 }
