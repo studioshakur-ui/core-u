@@ -1,10 +1,4 @@
-// 🔥 Hotfix: bascule CDN si le paquet local n'est pas dispo en build
-let createClient;
-try {
-  ({ createClient } = await import('@supabase/supabase-js'));
-} catch {
-  ({ createClient } = await import('https://esm.sh/@supabase/supabase-js@2'));
-}
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
