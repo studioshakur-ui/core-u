@@ -1,3 +1,7 @@
+// debug rollup
+process.on("warning", (w) => { console.warn("[warn]", w); });
+
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import legacy from "@vitejs/plugin-legacy";
