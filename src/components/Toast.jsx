@@ -4,18 +4,21 @@ const ToastCtx = createContext(null);
 
 export function ToastProvider({ children }) {
   const [items, setItems] = useState([]);
+
   const push = useCallback((t) => {
     const id = crypto.randomUUID();
     setItems((xs) => [...xs, { id, ...t }]);
     const ttl = t.ttl ?? 3500;
     setTimeout(() => setItems((xs) => xs.filter((x) => x.id !== id)), ttl);
   }, []);
+
   const api = {
     info: (msg, opts) => push({ type: "info", msg, ...opts }),
     ok:   (msg, opts) => push({ type: "ok",   msg, ...opts }),
     warn: (msg, opts) => push({ type: "warn", msg, ...opts }),
     err:  (msg, opts) => push({ type: "err",  msg, ...opts }),
   };
+
   return (
     <ToastCtx.Provider value={api}>
       {children}
@@ -42,9 +45,9 @@ export function ToastProvider({ children }) {
   );
 }
 
+/* Hook non bloquant : renvoie des no-op si pas de Provider */
 export function useToast() {
   const ctx = useContext(ToastCtx);
-  // 🔐 Fallback no-op pour éviter tout crash si le Provider manque
   if (!ctx) {
     const noop = () => {};
     return { info: noop, ok: noop, warn: noop, err: noop };
