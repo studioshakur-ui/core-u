@@ -6,16 +6,15 @@ export function ToastProvider({ children }) {
   const [items, setItems] = useState([]);
   const push = useCallback((t) => {
     const id = crypto.randomUUID();
-    const next = { id, ...t };
-    setItems((xs) => [...xs, next]);
+    setItems((xs) => [...xs, { id, ...t }]);
     const ttl = t.ttl ?? 3500;
     setTimeout(() => setItems((xs) => xs.filter((x) => x.id !== id)), ttl);
   }, []);
   const api = {
     info: (msg, opts) => push({ type: "info", msg, ...opts }),
-    ok: (msg, opts) => push({ type: "ok", msg, ...opts }),
+    ok:   (msg, opts) => push({ type: "ok",   msg, ...opts }),
     warn: (msg, opts) => push({ type: "warn", msg, ...opts }),
-    err: (msg, opts) => push({ type: "err", msg, ...opts }),
+    err:  (msg, opts) => push({ type: "err",  msg, ...opts }),
   };
   return (
     <ToastCtx.Provider value={api}>
@@ -45,6 +44,10 @@ export function ToastProvider({ children }) {
 
 export function useToast() {
   const ctx = useContext(ToastCtx);
-  if (!ctx) throw new Error("useToast must be used within <ToastProvider/>");
+  // 🔐 Fallback no-op pour éviter tout crash si le Provider manque
+  if (!ctx) {
+    const noop = () => {};
+    return { info: noop, ok: noop, warn: noop, err: noop };
+  }
   return ctx;
 }
