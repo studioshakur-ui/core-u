@@ -2,6 +2,7 @@
   command = "npm run build"
   publish = "dist"
 
+# Cache et politique de fichiers
 [[headers]]
   for = "/index.html"
   [headers.values]
@@ -11,8 +12,3 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-[functions]
-  node_bundler = "esbuild"
-
-[[plugins]] # (assure-toi qu'aucun plugin de post-processing n'altère le bundle)
