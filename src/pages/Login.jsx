@@ -10,6 +10,7 @@ export default function Login() {
   const [err, setErr] = useState("");
   const navigate = useNavigate();
 
+  // Se già autenticato → vai subito alla home del ruolo
   useEffect(() => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -24,10 +25,13 @@ export default function Login() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setErr("");
+    const redirect = `${window.location.origin}/#/auth/callback`;
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/#/auth/callback` },
+      options: { emailRedirectTo: redirect },
     });
+
     if (error) setErr(error.message);
     else setDone(true);
   };
