@@ -2,19 +2,33 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Anti-cache pour index.html -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <title>CORE v5</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>CORE — Pianifica • Esegui • Controlla</title>
+    <meta
+      name="description"
+      content="CORE: pianificazione cantieri, report capi, versionamento tecnico e controllo capacità."
+    />
+
+    <!-- Favicons / OG -->
+    <link rel="icon" type="image/svg+xml" href="/assets/brand/core-logo-light.svg" />
+    <meta property="og:title" content="CORE — Pianifica • Esegui • Controlla" />
+    <meta property="og:image" content="/assets/brand/og-core-1200x630.png" />
+    <meta property="og:type" content="website" />
+
+    <!-- Preload brand -->
+    <link rel="preload" href="/assets/brand/core-logo-dark.svg" as="image" />
+    <link rel="preload" href="/assets/brand/core-logo-light.svg" as="image" />
+
+    <!-- Tailwind build -->
+    <link rel="stylesheet" href="/src/index.css" />
   </head>
   <body>
-    <a class="skip-to-content-link" href="#main">Salta al contenuto</a>
-    <div id="root">
-      <noscript>Abilita JavaScript per usare CORE.</noscript>
-      <div id="watchdog" style="padding:8px;color:#ffb84d;font-family:system-ui;">Avvio…</div>
-    </div>
+    <a class="skip-to-content" href="#main">Salta al contenuto</a>
+    <div id="root"></div>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
