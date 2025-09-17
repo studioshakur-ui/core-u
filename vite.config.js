@@ -1,30 +1,12 @@
-// debug rollup
-process.on("warning", (w) => { console.warn("[warn]", w); });
-
-
+// vite.config.js
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import legacy from "@vitejs/plugin-legacy";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    legacy({
-      targets: [
-        "defaults",
-        "not IE 11",
-        "Android >= 7",
-        "iOS >= 12",
-        "Chrome >= 61",
-        "Safari >= 12",
-        "Samsung >= 8"
-      ],
-      renderLegacyChunks: true,
-      polyfills: true,
-      modernPolyfills: true
-    })
-  ],
+  plugins: [react()],
   esbuild: { jsx: "automatic" },
-  optimizeDeps: { include: ["react", "react-dom", "react-router-dom"] },
+  optimizeDeps: {
+    include: ["react", "react-dom", "react-router-dom", "@supabase/supabase-js"]
+  },
   build: { sourcemap: true }
 });
