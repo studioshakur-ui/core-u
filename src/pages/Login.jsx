@@ -25,9 +25,7 @@ export default function Login() {
   if (done) {
     return (
       <div style={{ padding: 24 }}>
-        Lien de connexion envoyé. Vérifie ta boîte mail.
-        <br />
-        Après clic, tu seras redirigé vers l’app.
+        Lien de connexion envoyé. Ouvre ton email et clique le lien pour entrer.
       </div>
     );
   }
