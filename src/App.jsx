@@ -25,7 +25,7 @@ export default function App(){
         onLogout={()=>supabase.auth.signOut()}
       />
 
-      <main className="pt-14">
+      <main className="bg-[#0f1117] text-white pt-14">
         <Hero />
         <KpiStrip />
         <Features />
