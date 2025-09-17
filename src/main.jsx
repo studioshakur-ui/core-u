@@ -1,17 +1,45 @@
 // src/main.jsx
+import "./index.css";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabaseClient";
-import "./index.css";
+import { getHomeRoute } from "./lib/routeUtils";
 
-import AppShell from "./AppShell";
-import Login from "./pages/Login";
-import AuthCallback from "./pages/AuthCallback";
-import Capo from "./pages/Capo";
-import Manager from "./pages/Manager";
-import Direzione from "./pages/Direzione";
-import { getHomeRoute } from "./pages/AuthCallback";
+import AppShell from "./AppShell.jsx";
+import Login from "./pages/Login.jsx";
+import AuthCallback from "./pages/AuthCallback.jsx";
+import Capo from "./pages/Capo.jsx";
+import Manager from "./pages/Manager.jsx";
+import Direzione from "./pages/Direzione.jsx";
+
+// Envoie l'utilisateur connecté vers sa “home” si on arrive sur "/"
+function AutoHome() {
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user ?? null;
+
+      if (!user) {
+        window.location.replace(`${window.location.origin}/#/login`);
+        return;
+      }
+
+      const { data: p } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      const role = p?.role ?? "capo";
+      window.location.replace(`${window.location.origin}/#${getHomeRoute(role)}`);
+    })().finally(() => setDone(true));
+  }, []);
+
+  return done ? null : <div style={{ padding: 24 }}>Redirection…</div>;
+}
 
 function RequireAuth({ children, accept }) {
   const [state, setState] = useState({ loading: true, user: null, role: null });
@@ -21,7 +49,6 @@ function RequireAuth({ children, accept }) {
 
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
-
       const { data: sub } = supabase.auth.onAuthStateChange((_evt, sess) => {
         setState((s) => ({ ...s, user: sess?.user ?? null }));
       });
@@ -39,7 +66,6 @@ function RequireAuth({ children, accept }) {
       }
 
       if (mounted) setState({ loading: false, user, role });
-
       return () => sub.subscription.unsubscribe();
     })();
 
@@ -52,24 +78,14 @@ function RequireAuth({ children, accept }) {
   if (accept && !accept.includes(state.role)) {
     return <Navigate to={getHomeRoute(state.role)} replace />;
   }
-
   return children;
-}
-
-function AppBoot() {
-  // Masquer le fallback HTML (fin des Ctrl+Shift+R)
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.__react_mounted__) {
-      window.__react_mounted__();
-    }
-  }, []);
-  return <AppShell />;
 }
 
 createRoot(document.getElementById("root")).render(
   <HashRouter>
     <Routes>
-      <Route element={<AppBoot />}>
+      <Route element={<AppShell />}>
+        <Route path="/" element={<AutoHome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
 
@@ -98,7 +114,7 @@ createRoot(document.getElementById("root")).render(
           }
         />
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
   </HashRouter>
