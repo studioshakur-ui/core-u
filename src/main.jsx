@@ -5,16 +5,9 @@ import App from "./App.jsx";
 import "./index.css";
 import { supabase } from "./lib/supabaseClient";
 import { ToastProvider } from "./components/Toast.jsx";
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <HashRouter>
-      <ToastProvider>
-        <App />
-      </ToastProvider>
-    </HashRouter>
-  </React.StrictMode>
-);
+import ErrorBoundary from "./components/ErrorBoundary.jsx";
 
+// Nettoie les tokens Supabase APRÈS création/restauration de session
 const cleanupUrl = () => {
   const h = window.location.hash || "";
   if (h.includes("access_token=") || h.includes("refresh_token=") || h.includes("type=")) {
@@ -30,7 +23,11 @@ supabase.auth.onAuthStateChange((event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HashRouter>
-      <App />
+      <ToastProvider>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </ToastProvider>
     </HashRouter>
   </React.StrictMode>
 );
