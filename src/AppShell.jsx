@@ -72,16 +72,20 @@ export default function AppShell() {
           </div>
 
           {isAuth && (
-            <nav className="flex gap-3 items-center">
-              <NavLink to="/capo" className={linkCls}>Capo</NavLink>
-              {(role === "manager" || role === "direzione") && (
-                <NavLink to="/manager" className={linkCls}>Manager</NavLink>
-              )}
-              {role === "direzione" && (
-                <NavLink to="/direzione" className={linkCls}>Direzione</NavLink>
-              )}
-              {offline && <span className="chip">Offline</span>}
-            </nav>
+         <nav className="flex gap-3 items-center">
+  <NavLink to="/capo" className={linkCls}>Capo</NavLink>
+  {(role === "manager" || role === "direzione") && (
+    <NavLink to="/manager" className={linkCls}>Manager</NavLink>
+  )}
+  {role === "direzione" && (
+    <>
+      <NavLink to="/direzione" className={linkCls}>Direzione</NavLink>
+      <NavLink to="/admin/users" className={linkCls}>Utenti</NavLink>
+    </>
+  )}
+  {offline && <span className="chip">Offline</span>}
+</nav>
+
           )}
 
           {isAuth ? (
