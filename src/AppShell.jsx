@@ -4,6 +4,7 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "./lib/supabaseClient";
 import { useCoreStore } from "./store/useCoreStore";
 import ToastHost from "./components/ui/ToastHost";
+import BrandLogo from "./components/BrandLogo";
 
 export default function AppShell() {
   const navigate = useNavigate();
@@ -14,7 +15,10 @@ export default function AppShell() {
 
     const handleNet = () => {
       setOffline(!navigator.onLine);
-      pushToast({ title: navigator.onLine ? "Online" : "Offline", message: navigator.onLine ? "Connessione ripristinata" : "Modalità offline" });
+      pushToast({
+        title: navigator.onLine ? "Online" : "Offline",
+        message: navigator.onLine ? "Connessione ripristinata" : "Modalità offline",
+      });
     };
     window.addEventListener("online", handleNet);
     window.addEventListener("offline", handleNet);
@@ -63,10 +67,12 @@ export default function AppShell() {
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-black/40 backdrop-blur">
         <div className="mx-auto max-w-7xl flex items-center justify-between px-4 py-3">
-          <strong className="text-white">CORE v5</strong>
+          <div className="flex items-center gap-3">
+            <BrandLogo className="h-6 w-auto" />
+          </div>
+
           {isAuth && (
             <nav className="flex gap-3 items-center">
-              {/* Visibilità per ruolo */}
               <NavLink to="/capo" className={linkCls}>Capo</NavLink>
               {(role === "manager" || role === "direzione") && (
                 <NavLink to="/manager" className={linkCls}>Manager</NavLink>
@@ -77,6 +83,7 @@ export default function AppShell() {
               {offline && <span className="chip">Offline</span>}
             </nav>
           )}
+
           {isAuth ? (
             <div className="flex items-center gap-2">
               <span className="muted text-sm">{session.email || "sessione"}</span>
@@ -87,6 +94,7 @@ export default function AppShell() {
           )}
         </div>
       </header>
+
       <main className="mx-auto max-w-7xl px-4 py-6">
         <Outlet />
       </main>
