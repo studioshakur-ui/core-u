@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { getHomeRoute } from "../lib/routeUtils";
 
 export default function AuthCallback() {
   const [msg, setMsg] = useState("Vérification…");
@@ -9,23 +10,25 @@ export default function AuthCallback() {
 
   useEffect(() => {
     (async () => {
-      // 1) Échanger un éventuel code (PKCE OAuth / magic link moderne)
-      try { await supabase.auth.exchangeCodeForSession(); } catch (_) {}
+      try {
+        // Finalise la session (PKCE/magic link). Si pas nécessaire, ignore l’erreur.
+        await supabase.auth.exchangeCodeForSession();
+      } catch (_) {}
 
-      // 2) Lire la session
+      // Session courante
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        setMsg("Lien invalide ou expiré. Réessaie l’authentification.");
-        setTimeout(() => navigate("/login"), 2000);
+        setMsg("Lien invalide ou expiré. Réessaie la connexion.");
+        setTimeout(() => navigate("/login"), 1500);
         return;
       }
 
       const user = session.user;
 
-      // 3) S’assurer qu’un profil existe et qu’il est au minimum 'capo'
+      // Garantit que le profil existe (n’écrase pas un rôle déjà défini)
       await ensureProfile(user);
 
-      // 4) Charger le rôle et router
+      // Lis le rôle et route
       const role = await getUserRole(user.id);
       navigate(getHomeRoute(role), { replace: true });
     })();
@@ -37,7 +40,7 @@ export default function AuthCallback() {
 async function ensureProfile(user) {
   const { data: existing } = await supabase
     .from("profiles")
-    .select("id")
+    .select("id, role")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -45,11 +48,13 @@ async function ensureProfile(user) {
     await supabase.from("profiles").insert({
       id: user.id,
       email: user.email,
-      role: "capo",
+      role: "capo", // par défaut; sera remplacé si déjà promu par admin
     });
   } else {
-    // Optionnel: garder l'email à jour
-    await supabase.from("profiles").update({ email: user.email }).eq("id", user.id);
+    // garde l'email à jour, ne touche pas au rôle
+    await supabase.from("profiles")
+      .update({ email: user.email })
+      .eq("id", user.id);
   }
 }
 
@@ -59,11 +64,6 @@ async function getUserRole(userId) {
     .select("role")
     .eq("id", userId)
     .maybeSingle();
-  return p?.role ?? "capo";
-}
 
-export function getHomeRoute(role) {
-  if (role === "direzione") return "/direzione";
-  if (role === "manager") return "/manager";
-  return "/capo";
+  return p?.role ?? "capo";
 }
