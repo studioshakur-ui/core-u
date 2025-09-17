@@ -7,7 +7,6 @@
     "build": "vite build --debug",
     "preview": "vite preview"
   },
-  {
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
     "papaparse": "^5.4.1",
@@ -24,5 +23,7 @@
     "postcss": "^8.4.47",
     "autoprefixer": "^10.4.20"
   },
-  "engines": { "node": ">=18.18 <23" }
+  "engines": {
+    "node": ">=18.18 <23"
+  }
 }
