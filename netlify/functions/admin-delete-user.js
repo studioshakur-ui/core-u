@@ -1,8 +1,11 @@
-// netlify/functions/admin-delete-user.js
 import { createClient } from "@supabase/supabase-js";
+import { requireDirezione } from "./_guard.js";
 
 export const handler = async (event) => {
   try {
+    const gate = await requireDirezione(event);
+    if (!gate.ok) return { statusCode: gate.statusCode, body: gate.body };
+
     if (event.httpMethod !== "POST") return { statusCode: 405, body: "Method Not Allowed" };
     const { email, userId } = JSON.parse(event.body || "{}");
     if (!email && !userId) return { statusCode: 400, body: "email o userId richiesti" };
@@ -19,7 +22,6 @@ export const handler = async (event) => {
     }
     if (!id) return { statusCode: 404, body: "Utente non trovato" };
 
-    // Cancella l'utente (cascade rimuove il profilo se FK ON DELETE CASCADE è impostata)
     const { error } = await admin.auth.admin.deleteUser(id);
     if (error) return { statusCode: 400, body: error.message };
 
