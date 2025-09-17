@@ -8,7 +8,8 @@ import { getHomeRoute } from "./lib/routeUtils";
 
 import AppShell from "./AppShell.jsx";
 import Login from "./pages/Login.jsx";
-import AuthCallback from "./pages/AuthCallback.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+import AdminUsers from "./pages/AdminUsers.jsx";
 import Capo from "./pages/Capo.jsx";
 import Manager from "./pages/Manager.jsx";
 import Direzione from "./pages/Direzione.jsx";
@@ -59,10 +60,25 @@ createRoot(document.getElementById("root")).render(
       <Route element={<AppShell />}>
         <Route path="/" element={<AutoHome />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/capo" element={<RequireAuth accept={["capo","manager","direzione"]}><Capo /></RequireAuth>} />
-        <Route path="/manager" element={<RequireAuth accept={["manager","direzione"]}><Manager /></RequireAuth>} />
-        <Route path="/direzione" element={<RequireAuth accept={["direzione"]}><Direzione /></RequireAuth>} />
+        <Route path="/reset" element={<ResetPassword />} />
+
+        <Route
+          path="/capo"
+          element={<RequireAuth accept={["capo","manager","direzione"]}><Capo /></RequireAuth>}
+        />
+        <Route
+          path="/manager"
+          element={<RequireAuth accept={["manager","direzione"]}><Manager /></RequireAuth>}
+        />
+        <Route
+          path="/direzione"
+          element={<RequireAuth accept={["direzione"]}><Direzione /></RequireAuth>}
+        />
+        <Route
+          path="/admin/users"
+          element={<RequireAuth accept={["direzione"]}><AdminUsers /></RequireAuth>}
+        />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
