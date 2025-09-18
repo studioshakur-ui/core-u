@@ -2,29 +2,46 @@
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * ✅ MODE RÉEL (obligatoire)
- * Ces variables doivent être définies dans Netlify → Site settings → Build & deploy → Environment
- * - VITE_SUPABASE_URL
- * - VITE_SUPABASE_ANON_KEY
+ * Initialisation Supabase tolérante :
+ * - N'explose pas si les variables d'env manquent (initError renseigné)
+ * - Expose 'env', 'initError' et 'supabase' (null si non initialisé)
+ * - Compatible avec les imports depuis main.jsx et pages/Diagnostics.jsx
  */
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Vérification stricte : on préfère échouer vite avec un message clair.
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  // Message explicite dans la console pour diagnostiquer en prod si besoin.
-  console.error(
-    "[CORE] Variables manquantes:",
-    { VITE_SUPABASE_URL: !!SUPABASE_URL, VITE_SUPABASE_ANON_KEY: !!SUPABASE_ANON_KEY }
-  );
-  throw new Error(
-    "Supabase configuration missing: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Netlify."
-  );
+export const env = {
+  url: import.meta.env?.VITE_SUPABASE_URL || "",
+  key: import.meta.env?.VITE_SUPABASE_ANON_KEY || "",
+};
+
+export let initError = null;
+export let supabase = null;
+
+try {
+  if (!env.url || !env.key) {
+    initError = `Missing env: ${
+      !env.url ? "VITE_SUPABASE_URL " : ""
+    }${!env.key ? "VITE_SUPABASE_ANON_KEY" : ""}`.trim();
+    console.error("[CORE] Supabase init error →", initError);
+  } else {
+    supabase = createClient(env.url, env.key, {
+      auth: { persistSession: true, autoRefreshToken: true },
+    });
+  }
+} catch (e) {
+  initError = e?.message || String(e);
+  console.error("[CORE] Supabase init exception →", e);
 }
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
+/** Utilitaire optionnel pour tests /diag (sélect anonyme simple) */
+export async function diagAnonymousSelect() {
+  if (!supabase) {
+    return { ok: false, error: initError || "Client not initialised" };
+  }
+  try {
+    const { data, error } = await supabase.from("profiles").select("id").limit(1);
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, rows: Array.isArray(data) ? data.length : 0 };
+  } catch (e) {
+    return { ok: false, error: e?.message || String(e) };
+  }
+}
