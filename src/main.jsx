@@ -21,6 +21,19 @@ import Capo from "./pages/Capo.jsx";
 import Manager from "./pages/Manager.jsx";
 import Direzione from "./pages/Direzione.jsx";
 
+window.addEventListener("error", function (e) {
+  const div = document.createElement("div");
+  div.style.position = "fixed";
+  div.style.bottom = "0";
+  div.style.left = "0";
+  div.style.width = "100%";
+  div.style.background = "red";
+  div.style.color = "white";
+  div.style.padding = "10px";
+  div.innerText = e.message;
+  document.body.appendChild(div);
+});
+
 /* --------- util: charge le rôle depuis profiles --------- */
 async function fetchRole(userId) {
   if (!userId) return null;
