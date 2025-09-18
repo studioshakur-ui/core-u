@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CORE — Pianifica • Esegui • Controlla</title>
 
-    <!-- Manifeste PWA (optionnel si tu l'as ajouté) -->
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- Ces meta aident certains navigateurs/proxies à ne pas réutiliser un index périmé -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
 
-    <!-- ✅ Preload corrigé (as="image"). Supprime si tu ne les utilises pas immédiatement. -->
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preload" as="image" href="/assets/brand/core-logo-dark.svg" />
     <link rel="preload" as="image" href="/assets/brand/core-logo-light.svg" />
   </head>
