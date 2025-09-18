@@ -1,85 +1,79 @@
 // src/pages/Login.jsx
-import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
-import { getHomeRoute } from "../lib/routeUtils";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabaseClient";
+
+async function fetchRole(userId) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
+  if (!error && data && data.role) return data.role;
+  return null;
+}
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
-  const [err, setErr] = useState("");
-  const [ok, setOk] = useState("");
-  const navigate = useNavigate();
+  const [msg, setMsg] = useState("");
 
-  useEffect(() => {
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user ?? null;
-      if (!user) return;
-      const { data: p } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-      const role = p?.role ?? "capo";
-      navigate(getHomeRoute(role), { replace: true });
-    })();
-  }, [navigate]);
-
-  async function onLogin(e){
+  async function onSubmit(e) {
     e.preventDefault();
-    setErr(""); setOk("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
-    if (error) { setErr(error.message); return; }
+    setMsg("");
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: pwd
+    });
+    if (error) {
+      setMsg(error.message);
+      return;
+    }
+    const user = data?.user || null;
+    const role = user ? await fetchRole(user.id) : null;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data: p } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-    const role = p?.role ?? "capo";
-    navigate(getHomeRoute(role), { replace: true });
-  }
-
-  async function onForgot(){
-    setErr(""); setOk("");
-    if (!email) { setErr("Inserisci l'email, poi clicca ‘Password dimenticata’."); return; }
-    const redirectTo = `${window.location.origin}/#/reset`;
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
-    if (error) setErr(error.message);
-    else setOk("Email inviata: controlla la posta per impostare una nuova password.");
+    // Redirection selon rôle
+    if (role === "direzione") navigate("/direzione", { replace: true });
+    else if (role === "manager") navigate("/manager", { replace: true });
+    else navigate("/capo", { replace: true });
   }
 
   return (
-    <div className="container-core">
-      <form onSubmit={onLogin} className="card space-y-4 max-w-lg">
-        <h1 className="text-2xl font-semibold">Accesso</h1>
-
-        <label className="block">
-          <span className="block mb-1">Email</span>
-          <input
-            type="email" required value={email} onChange={(e)=>setEmail(e.target.value)}
-            className="w-full rounded-xl bg-white/5 border border-white/15 px-4 py-2 outline-none focus:ring-2 focus:ring-white/30"
-            placeholder="nome@azienda.it"
-          />
-        </label>
-
-        <label className="block">
-          <span className="block mb-1">Password</span>
-          <input
-            type="password" required value={pwd} onChange={(e)=>setPwd(e.target.value)}
-            className="w-full rounded-xl bg-white/5 border border-white/15 px-4 py-2 outline-none focus:ring-2 focus:ring-white/30"
-            placeholder="••••••••"
-          />
-        </label>
-
-        <div className="flex items-center gap-3">
-          <button type="submit" className="btn btn-primary">Entra</button>
-          <button type="button" className="btn btn-ghost" onClick={onForgot}>Password dimenticata</button>
-        </div>
-
-        {err && <div className="text-red-400">{err}</div>}
-        {ok && <div className="text-emerald-400">{ok}</div>}
-
-        <div className="muted text-sm">
-          Solo gli account creati dall’amministrazione possono accedere.
-          <br/>
-          Area amministrazione: <Link to="/admin/users" className="underline">Gestione utenti</Link> (solo Direzione).
-        </div>
+    <div style={{ maxWidth: 420 }}>
+      <h1 style={{ marginBottom: 8 }}>Accedi</h1>
+      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
+        <input
+          type="email"
+          placeholder="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: 12 }}
+        />
+        <input
+          type="password"
+          placeholder="password"
+          value={pwd}
+          onChange={(e) => setPwd(e.target.value)}
+          required
+          style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: 12 }}
+        />
+        <button
+          type="submit"
+          style={{
+            padding: "10px 14px",
+            borderRadius: 12,
+            border: "1px solid #0ea5e9",
+            background: "#0ea5e9",
+            color: "white",
+            fontWeight: 700
+          }}
+        >
+          Entra
+        </button>
       </form>
+      {!!msg && <p style={{ marginTop: 12, color: "#b91c1c" }}>{msg}</p>}
     </div>
   );
 }
