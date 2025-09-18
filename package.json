@@ -2,8 +2,13 @@
   "name": "core-u",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20 <21",
+    "npm": ">=10"
+  },
   "scripts": {
     "dev": "vite",
+    "prebuild": "vite optimize", 
     "build": "vite build",
     "preview": "vite preview"
   },
