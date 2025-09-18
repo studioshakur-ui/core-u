@@ -1,3 +1,4 @@
+// src/components/Logo.jsx
 import React from "react";
 
 export default function Logo({ variant = "auto", height = 20, alt = "CORE" }) {
@@ -5,11 +6,12 @@ export default function Logo({ variant = "auto", height = 20, alt = "CORE" }) {
     variant === "auto"
       ? (typeof document !== "undefined" &&
           (document.documentElement.dataset.theme === "dark" ||
-           window.matchMedia?.("(prefers-color-scheme: dark)")?.matches))
+            window.matchMedia?.("(prefers-color-scheme: dark)")?.matches))
       : variant === "dark";
 
-  const src = isDark ? "/assets/brand/core-logo-light.svg"
-                     : "/assets/brand/core-logo-dark.svg";
+  const src = isDark
+    ? "/assets/brand/core-logo-light.svg"
+    : "/assets/brand/core-logo-dark.svg";
 
   return (
     <img
