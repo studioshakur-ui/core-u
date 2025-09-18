@@ -4,40 +4,63 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default ({ mode }) => {
-  // Charge aussi les variables .env* (pour VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY si besoin local)
   loadEnv(mode, process.cwd(), "");
-
   return defineConfig({
     plugins: [react()],
 
-    // Alias: "@/..." pointe vers "src"
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "src"),
-      },
+        "@": path.resolve(__dirname, "src")
+      }
+    },
+
+    // 🔧 Important: exceljs/jspdf/html2canvas sont lourds
+    optimizeDeps: {
+      include: [
+        "react",
+        "react-dom",
+        "react-router-dom",
+        "zustand",
+        "dayjs",
+        "exceljs",
+        "jspdf",
+        "jspdf-autotable",
+        "html2canvas",
+        "clsx",
+        "localforage"
+      ]
     },
 
     build: {
-      sourcemap: true,   // utile pour déboguer en prod (Netlify)
+      sourcemap: true,
       outDir: "dist",
       target: "es2019",
-      // rollupOptions: { external: [] }, // à utiliser si tu veux externaliser un module
-      // commonjsOptions: { transformMixedEsModules: true }, // si tu en as besoin
+      modulePreload: { polyfill: false },
+      // taille/chunking mieux maîtrisés → moins de stress mémoire côté build
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ["react", "react-dom", "react-router-dom"],
+            data: ["dayjs", "zustand", "localforage"],
+            heavy: ["exceljs", "jspdf", "jspdf-autotable", "html2canvas"]
+          }
+        }
+      },
+      commonjsOptions: {
+        transformMixedEsModules: true
+      }
     },
 
     server: {
-      port: 5173,
-      strictPort: false,
-      open: false,
+      port: 5173
     },
 
     preview: {
-      port: 4173,
+      port: 4173
     },
 
-    // Expose NODE_ENV pour l'ErrorBoundary (affichage du stack uniquement en non-prod)
     define: {
-      "process.env.NODE_ENV": JSON.stringify(mode),
-    },
+      "process.env.NODE_ENV": JSON.stringify(mode)
+    }
   });
 };
