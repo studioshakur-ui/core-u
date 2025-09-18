@@ -1,4 +1,3 @@
-// src/main.jsx
 import "./index.css";
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -9,10 +8,6 @@ import ErrorBoundary from "@/components/ErrorBoundary.jsx";
 import AppLoader from "@/components/AppLoader.jsx";
 import { swCleanup } from "@/utils/swCleanup.js";
 
-// Lance le nettoyage SW/caches le plus tôt possible
-swCleanup().catch(() => {});
-
-// Pages
 import Login from "@/pages/Login.jsx";
 import Capo from "@/pages/Capo.jsx";
 import ManagerHub from "@/pages/ManagerHub.jsx";
@@ -20,84 +15,52 @@ import Direzione from "@/pages/Direzione.jsx";
 import AdminUsers from "@/pages/AdminUsers.jsx";
 import Diagnostics from "@/pages/Diagnostics.jsx";
 
-const AUTH_TIMEOUT_MS = 2000;
+swCleanup();
 
-async function fetchRole(userId) {
+async function fetchRole(userId){
   try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .maybeSingle();
-    if (!error && data && data.role) return data.role;
-  } catch (e) {
-    console.warn("[CORE] fetchRole error:", e);
-  }
-  return null;
+    const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+    return data?.role || null;
+  } catch { return null; }
 }
 
-function RequireAuth({ accept = ["capo", "manager", "direzione"] }) {
-  const [state, setState] = useState({ loading: true, user: null, role: null });
+function RequireAuth({ accept=["capo","manager","direzione"] }){
+  const [state, setState] = useState({ loading:true, user:null, role:null });
 
   useEffect(() => {
     let alive = true;
-
-    async function prime() {
+    (async () => {
+      if (initError) { setState({ loading:false, user:null, role:null }); return; }
       try {
-        if (initError) {
-          setState({ loading: false, user: null, role: null });
-          return;
-        }
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((resolve) =>
-          setTimeout(() => resolve({ data: { session: null } }), AUTH_TIMEOUT_MS)
-        );
-        const raced = (await Promise.race([sessionPromise, timeoutPromise])) || { data: { session: null } };
-        const session = raced?.data?.session ?? null;
+        const { data: { session } } = await supabase.auth.getSession();
         const user = session?.user ?? null;
         const role = user ? await fetchRole(user.id) : null;
-        if (!alive) return;
-        setState({ loading: false, user, role });
-      } catch (e) {
-        console.error("[CORE] auth prime error:", e);
-        if (!alive) return;
-        setState({ loading: false, user: null, role: null });
+        if (alive) setState({ loading:false, user, role });
+      } catch {
+        if (alive) setState({ loading:false, user:null, role:null });
       }
-    }
-
+    })();
     const { data: sub } = supabase?.auth?.onAuthStateChange?.(async (_evt, sess) => {
-      try {
-        const user = sess?.user ?? null;
-        const role = user ? await fetchRole(user.id) : null;
-        if (!alive) return;
-        setState({ loading: false, user, role });
-      } catch (e) {
-        console.warn("[CORE] onAuthStateChange error:", e);
-        if (!alive) return;
-        setState({ loading: false, user: null, role: null });
-      }
-    }) || { data: null };
-
-    prime();
-    return () => { alive = false; sub?.subscription?.unsubscribe?.(); };
+      const user = sess?.user ?? null;
+      const role = user ? await fetchRole(user.id) : null;
+      setState({ loading:false, user, role });
+    }) || { data:null };
+    return () => { alive=false; sub?.subscription?.unsubscribe?.(); };
   }, []);
 
-  if (state.loading) return <AppLoader label="Caricamento…" />;
+  if (state.loading) return <AppLoader />;
   if (initError) return <Navigate to="/diag" replace />;
   if (!state.user) return <Navigate to="/login" replace />;
 
   const role = state.role || "capo";
   if (!accept.includes(role)) return <Navigate to="/capo" replace />;
 
-  return <Outlet />;
+  return <Outlet/>;
 }
 
-function AppRoutes() {
+function AppRoutes(){
   const navigate = useNavigate();
-  useEffect(() => {
-    if (location.hash === "#main") navigate("/", { replace: true });
-  }, [navigate]);
-
+  useEffect(() => { if (location.hash === "#main") navigate("/", { replace:true }); }, [navigate]);
   return (
     <Routes>
       <Route element={<AppShell />}>
@@ -105,11 +68,11 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/diag" element={<Diagnostics />} />
 
-        <Route element={<RequireAuth accept={["capo", "manager", "direzione"]} />}>
+        <Route element={<RequireAuth accept={["capo","manager","direzione"]} />}>
           <Route path="/capo" element={<Capo />} />
         </Route>
 
-        <Route element={<RequireAuth accept={["manager", "direzione"]} />}>
+        <Route element={<RequireAuth accept={["manager","direzione"]} />}>
           <Route path="/manager" element={<ManagerHub />} />
         </Route>
 
