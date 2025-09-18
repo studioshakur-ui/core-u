@@ -1,64 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Thème gris + mauve */
-:root{
-  --bg:#0E1016;
-  --panel:#121521;
-  --card:#151826;
-  --stroke:rgba(255,255,255,.08);
-  --fg:#EEF2FF;
-  --muted:#A7B0C0;
-  --accent:#8B5CF6; /* mauve */
-}
-
-.skip-to-content-link{
-  position:absolute; left:-9999px; top:0; background:#fff; color:#000; padding:.5rem .75rem; z-index:9999;
-}
-.skip-to-content-link:focus{ left:.5rem; top:.5rem; border-radius:.5rem; }
-
-/* Layout container */
-.container-core{ width:100%; max-width: 1160px; margin:0 auto; padding:0 1rem; }
-
-/* Brand logo sizes */
-.brand-logo{ width:auto; height:28px; }
-@media (min-width:768px){ .brand-logo{ height:32px } }
-
-/* Buttons */
-.btn{ @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm transition; }
-.btn-primary{ background:linear-gradient(180deg,#20F4A6,#14C288); color:#081014; box-shadow:0 0 0 0 rgba(32,244,166,.0); }
-.btn-primary:hover{ filter:brightness(1.05); box-shadow:0 8px 40px -12px rgba(32,244,166,.45); }
-.btn-ghost{ background:transparent; color:#fff; border:1px solid var(--stroke); }
-.btn-ghost:hover{ background:rgba(255,255,255,.06); }
-
-/* Cards */
-.card{
-  background:var(--card); border:1px solid var(--stroke); border-radius:1rem; padding:1rem;
-  box-shadow: 0 6px 30px -20px #000 inset;
-}
-
-/* Modal */
-.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:60; }
-.modal-card{ width:100%; max-width:520px; background:var(--panel); border:1px solid var(--stroke); border-radius:1rem; padding:1rem 1rem 1.25rem; }
-.field{ display:flex; flex-direction:column; gap:.375rem; }
-.field > span{ color:var(--muted); font-size:.9rem; }
-.field > input{ background:#0E0F15; border:1px solid var(--stroke); color:#fff; border-radius:.75rem; padding:.65rem .8rem; }
-.hint{ color:var(--muted); font-size:.8rem; }
-
-/* Segmented */
-.segmented{ display:inline-flex; background:#0F1220; border:1px solid var(--stroke); border-radius:.8rem; overflow:hidden; }
-.segmented > button{ padding:.4rem .8rem; color:#cfd6e5; }
-.segmented > button.on{ background:rgba(255,255,255,.06); color:#fff; }
-
-/* Toasts */
-.toast-host{ position:fixed; right:1rem; bottom:1rem; z-index:70; display:flex; flex-direction:column; gap:.5rem; }
-.toast{ color:#0B1213; background:#E8FFF6; border-left:4px solid #10b981; padding:.6rem .8rem; border-radius:.75rem; min-width:240px; }
-.toast.error{ background:#FFECEC; border-left-color:#ef4444; color:#2B0E10; }
-.toast.info{ background:#EEF2FF; border-left-color:#6366f1; color:#111827; }
-
-/* KBD helper */
-.kbd{ background:#0F1220; border:1px solid var(--stroke); border-radius:.6rem; padding:.3rem .5rem; color:var(--muted); }
-
-/* Links */
-a{ color:#C8B6FF; }
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background:#ffffff; color:#0f172a; }
+a { color: inherit; }
+button, input { font: inherit; }
+:focus-visible { outline: 2px solid #0ea5e9; outline-offset: 2px; }
