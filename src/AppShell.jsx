@@ -1,108 +1,60 @@
 // src/AppShell.jsx
-import React, { useEffect } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { supabase } from "./lib/supabaseClient";
-import { useCoreStore } from "./store/useCoreStore";
-import ToastHost from "./components/ui/ToastHost";
-import BrandLogo from "./components/BrandLogo";
+import React from "react";
+import { NavLink, Outlet } from "react-router-dom";
+import { isDemo } from "@/lib/supabaseClient";
 
 export default function AppShell() {
-  const navigate = useNavigate();
-  const { session, setSession, offline, setOffline, pushToast } = useCoreStore();
-
-  useEffect(() => {
-    if (window.__react_mounted__) window.__react_mounted__();
-
-    const handleNet = () => {
-      setOffline(!navigator.onLine);
-      pushToast({
-        title: navigator.onLine ? "Online" : "Offline",
-        message: navigator.onLine ? "Connessione ripristinata" : "Modalità offline",
-      });
-    };
-    window.addEventListener("online", handleNet);
-    window.addEventListener("offline", handleNet);
-
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      let role = null, email = null;
-      const user = session?.user ?? null;
-      if (user) {
-        email = user.email;
-        const { data: p } = await supabase.from("profiles").select("role,email").eq("id", user.id).maybeSingle();
-        role = p?.role ?? null; email = p?.email ?? email;
-      }
-      setSession({ user: user ?? null, role, email });
-    })();
-
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_evt, sess) => {
-      const u = sess?.user ?? null;
-      let r = null; let e = u?.email ?? null;
-      if (u) {
-        const { data: pr } = await supabase.from("profiles").select("role,email").eq("id", u.id).maybeSingle();
-        r = pr?.role ?? null; e = pr?.email ?? e;
-      }
-      setSession({ user: u, role: r, email: e });
-    });
-
-    return () => {
-      window.removeEventListener("online", handleNet);
-      window.removeEventListener("offline", handleNet);
-      sub.subscription.unsubscribe();
-    };
-  }, [setOffline, setSession, pushToast]);
-
-  async function onLogout(){
-    await supabase.auth.signOut();
-    navigate("/login", { replace: true });
-  }
-
-  const linkCls = ({ isActive }) =>
-    "px-2 py-1 rounded-lg " + (isActive ? "bg-neutral-800 text-white" : "text-sky-400 hover:text-sky-300");
-
-  const role = session.role;
-  const isAuth = !!session.user;
+  const linkStyle = ({ isActive }) => ({
+    padding: "8px 12px",
+    borderRadius: 12,
+    textDecoration: "none",
+    color: isActive ? "#0b1220" : "#0f172a",
+    background: isActive ? "#a7f3d0" : "#f1f5f9",
+    fontWeight: 600
+  });
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-black/40 backdrop-blur">
-        <div className="mx-auto max-w-7xl flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <BrandLogo className="h-6 w-auto" />
-          </div>
-
-          {isAuth && (
-         <nav className="flex gap-3 items-center">
-  <NavLink to="/capo" className={linkCls}>Capo</NavLink>
-  {(role === "manager" || role === "direzione") && (
-    <NavLink to="/manager" className={linkCls}>Manager</NavLink>
-  )}
-  {role === "direzione" && (
-    <>
-      <NavLink to="/direzione" className={linkCls}>Direzione</NavLink>
-      <NavLink to="/admin/users" className={linkCls}>Utenti</NavLink>
-    </>
-  )}
-  {offline && <span className="chip">Offline</span>}
-</nav>
-
-          )}
-
-          {isAuth ? (
-            <div className="flex items-center gap-2">
-              <span className="muted text-sm">{session.email || "sessione"}</span>
-              <button onClick={onLogout} className="btn btn-ghost">Esci</button>
-            </div>
-          ) : (
-            <span className="opacity-60">Accesso</span>
+    <div id="main" style={{ minHeight: "100vh", background: "#ffffff" }}>
+      <header
+        style={{
+          display: "flex",
+          gap: 12,
+          alignItems: "center",
+          padding: 16,
+          borderBottom: "1px solid #e2e8f0",
+          position: "sticky",
+          top: 0,
+          background: "white",
+          zIndex: 10
+        }}
+      >
+        <div style={{ fontWeight: 800, display: "flex", alignItems: "center", gap: 8 }}>
+          CORE
+          {isDemo && (
+            <span style={{
+              fontSize: 12,
+              padding: "2px 8px",
+              borderRadius: 999,
+              background: "#fde68a",
+              border: "1px solid #f59e0b",
+              color: "#7c2d12",
+              marginLeft: 6
+            }}>
+              DEMO
+            </span>
           )}
         </div>
+        <nav style={{ display: "flex", gap: 8 }}>
+          <NavLink to="/capo" style={linkStyle}>Capo</NavLink>
+          <NavLink to="/manager" style={linkStyle}>Manager</NavLink>
+          <NavLink to="/direzione" style={linkStyle}>Direzione</NavLink>
+          <NavLink to="/login" style={linkStyle}>Login</NavLink>
+        </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-6">
+      <main style={{ padding: 24 }}>
         <Outlet />
       </main>
-      <ToastHost />
     </div>
   );
 }
