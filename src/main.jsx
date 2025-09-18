@@ -3,19 +3,18 @@ import "./index.css";
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
-import { supabase } from "./lib/supabaseClient";
-import AppShell from "./AppShell.jsx";
-import ErrorBoundary from "./components/ErrorBoundary.jsx";
-import AppLoader from "./components/AppLoader.jsx";
+import { supabase } from "@/lib/supabaseClient";
+import AppShell from "@/AppShell.jsx";
+import ErrorBoundary from "@/components/ErrorBoundary.jsx";
+import AppLoader from "@/components/AppLoader.jsx";
 
 // Pages
-import Login from "./pages/Login.jsx";
-import Capo from "./pages/Capo.jsx";
-import ManagerHub from "./pages/ManagerHub.jsx";
-import Direzione from "./pages/Direzione.jsx";
-import AdminUsers from "./pages/AdminUsers.jsx";
+import Login from "@/pages/Login.jsx";
+import Capo from "@/pages/Capo.jsx";
+import ManagerHub from "@/pages/ManagerHub.jsx";
+import Direzione from "@/pages/Direzione.jsx";
+import AdminUsers from "@/pages/AdminUsers.jsx";
 
-/** Utilitaires */
 const AUTH_TIMEOUT_MS = 2000;
 
 async function fetchRole(userId) {
@@ -29,7 +28,6 @@ async function fetchRole(userId) {
   } catch (e) {
     console.warn("[CORE] fetchRole error:", e);
   }
-  // fallback: aucun rôle -> null
   return null;
 }
 
@@ -41,12 +39,10 @@ function RequireAuth({ accept = ["capo", "manager", "direzione"] }) {
 
     async function prime() {
       try {
-        // getSession avec timeout de sécurité
         const sessionPromise = supabase.auth.getSession();
         const timeoutPromise = new Promise((resolve) =>
           setTimeout(() => resolve({ data: { session: null } }), AUTH_TIMEOUT_MS)
         );
-
         const raced = (await Promise.race([sessionPromise, timeoutPromise])) || { data: { session: null } };
         const session = raced?.data?.session ?? null;
         const user = session?.user ?? null;
@@ -57,12 +53,10 @@ function RequireAuth({ accept = ["capo", "manager", "direzione"] }) {
       } catch (e) {
         console.error("[CORE] auth prime error:", e);
         if (!alive) return;
-        // En cas d’erreur, ne bloque pas l’UI
         setState({ loading: false, user: null, role: null });
       }
     }
 
-    // onAuthStateChange pour mises à jour ultérieures, mais on ne bloque pas dessus
     const { data: sub } = supabase.auth.onAuthStateChange(async (_evt, sess) => {
       try {
         const user = sess?.user ?? null;
@@ -96,7 +90,6 @@ function RequireAuth({ accept = ["capo", "manager", "direzione"] }) {
 function AppRoutes() {
   const navigate = useNavigate();
   useEffect(() => {
-    // Si on arrive avec #main (skip link), on redirige proprement
     if (location.hash === "#main") navigate("/", { replace: true });
   }, [navigate]);
 
