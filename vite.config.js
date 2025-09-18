@@ -3,29 +3,26 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
-// Export dynamique pour récupérer le mode (development | production)
-// et aligner process.env.NODE_ENV pour le code qui l'utilise.
 export default ({ mode }) => {
-  // Charge aussi les variables .env* si besoin (VITE_SUPABASE_URL, etc.)
+  // Charge aussi les variables .env* (pour VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY si besoin local)
   loadEnv(mode, process.cwd(), "");
 
   return defineConfig({
     plugins: [react()],
 
-    // Alias pratique: import "@/..." pointe vers /src
+    // Alias: "@/..." pointe vers "src"
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "src"),
       },
     },
 
-    // Build Netlify: active les sourcemaps pour déboguer les erreurs en prod
     build: {
-      sourcemap: true,
+      sourcemap: true,   // utile pour déboguer en prod (Netlify)
       outDir: "dist",
       target: "es2019",
-      // Si tu as des libs ESM pures, tu peux ajouter: commonjsOptions: { transformMixedEsModules: true }
-      // rollupOptions: { external: [] }, // à garder si tu dois externaliser un module
+      // rollupOptions: { external: [] }, // à utiliser si tu veux externaliser un module
+      // commonjsOptions: { transformMixedEsModules: true }, // si tu en as besoin
     },
 
     server: {
@@ -38,8 +35,7 @@ export default ({ mode }) => {
       port: 4173,
     },
 
-    // Aligne NODE_ENV pour les checks du type: process.env.NODE_ENV !== "production"
-    // (utile pour l'ErrorBoundary que nous avons ajouté).
+    // Expose NODE_ENV pour l'ErrorBoundary (affichage du stack uniquement en non-prod)
     define: {
       "process.env.NODE_ENV": JSON.stringify(mode),
     },
