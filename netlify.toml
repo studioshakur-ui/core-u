@@ -7,7 +7,7 @@
   NODE_OPTIONS = "--max_old_space_size=4096"
   NPM_FLAGS = "--no-audit --no-fund --prefer-offline"
 
-# No-cache sur la page d'entrée, que ce soit / ou /index.html
+# No-cache pour la page d'entrée (évite Ctrl+Shift+R)
 [[headers]]
   for = "/"
   [headers.values]
@@ -18,7 +18,7 @@
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
-# Cache long sur les assets fingerprintés
+# Cache long uniquement pour les assets fingerprintés Vite
 [[headers]]
   for = "/assets/*"
   [headers.values]
