@@ -3,10 +3,14 @@ import "./index.css";
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase, initError } from "@/lib/supabaseClient";
 import AppShell from "@/AppShell.jsx";
 import ErrorBoundary from "@/components/ErrorBoundary.jsx";
 import AppLoader from "@/components/AppLoader.jsx";
+import { swCleanup } from "@/utils/swCleanup.js";
+
+// Lance le nettoyage SW/caches le plus tôt possible
+swCleanup().catch(() => {});
 
 // Pages
 import Login from "@/pages/Login.jsx";
@@ -14,6 +18,7 @@ import Capo from "@/pages/Capo.jsx";
 import ManagerHub from "@/pages/ManagerHub.jsx";
 import Direzione from "@/pages/Direzione.jsx";
 import AdminUsers from "@/pages/AdminUsers.jsx";
+import Diagnostics from "@/pages/Diagnostics.jsx";
 
 const AUTH_TIMEOUT_MS = 2000;
 
@@ -39,6 +44,10 @@ function RequireAuth({ accept = ["capo", "manager", "direzione"] }) {
 
     async function prime() {
       try {
+        if (initError) {
+          setState({ loading: false, user: null, role: null });
+          return;
+        }
         const sessionPromise = supabase.auth.getSession();
         const timeoutPromise = new Promise((resolve) =>
           setTimeout(() => resolve({ data: { session: null } }), AUTH_TIMEOUT_MS)
@@ -47,7 +56,6 @@ function RequireAuth({ accept = ["capo", "manager", "direzione"] }) {
         const session = raced?.data?.session ?? null;
         const user = session?.user ?? null;
         const role = user ? await fetchRole(user.id) : null;
-
         if (!alive) return;
         setState({ loading: false, user, role });
       } catch (e) {
@@ -57,7 +65,7 @@ function RequireAuth({ accept = ["capo", "manager", "direzione"] }) {
       }
     }
 
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_evt, sess) => {
+    const { data: sub } = supabase?.auth?.onAuthStateChange?.(async (_evt, sess) => {
       try {
         const user = sess?.user ?? null;
         const role = user ? await fetchRole(user.id) : null;
@@ -68,17 +76,14 @@ function RequireAuth({ accept = ["capo", "manager", "direzione"] }) {
         if (!alive) return;
         setState({ loading: false, user: null, role: null });
       }
-    });
+    }) || { data: null };
 
     prime();
-
-    return () => {
-      alive = false;
-      sub?.subscription?.unsubscribe?.();
-    };
+    return () => { alive = false; sub?.subscription?.unsubscribe?.(); };
   }, []);
 
   if (state.loading) return <AppLoader label="Caricamento…" />;
+  if (initError) return <Navigate to="/diag" replace />;
   if (!state.user) return <Navigate to="/login" replace />;
 
   const role = state.role || "capo";
@@ -98,6 +103,7 @@ function AppRoutes() {
       <Route element={<AppShell />}>
         <Route path="/" element={<Navigate to="/capo" replace />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/diag" element={<Diagnostics />} />
 
         <Route element={<RequireAuth accept={["capo", "manager", "direzione"]} />}>
           <Route path="/capo" element={<Capo />} />
