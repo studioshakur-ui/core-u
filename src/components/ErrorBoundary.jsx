@@ -1,3 +1,4 @@
+// src/components/ErrorBoundary.jsx
 import React from "react";
 
 export default class ErrorBoundary extends React.Component {
@@ -5,32 +6,56 @@ export default class ErrorBoundary extends React.Component {
     super(props);
     this.state = { hasError: false, error: null };
   }
+
   static getDerivedStateFromError(error) {
     return { hasError: true, error };
   }
+
   componentDidCatch(error, info) {
+    // Log local + possibilité d’envoyer à un service (Sentry, etc.)
     console.error("[ErrorBoundary]", error, info);
   }
+
   handleReset = () => {
     this.setState({ hasError: false, error: null });
-    location.hash = "/"; 
+    // Tentative “soft” de recovery en restant sur la route courante
+    // et en purgeant un éventuel cache local incomplet.
+    try {
+      const keys = Object.keys(localStorage || {});
+      // ne supprime que nos clés connues
+      keys
+        .filter((k) => k.startsWith("core_") || k.startsWith("sb-"))
+        .forEach((k) => localStorage.removeItem(k));
+    } catch {}
+    // Recharger l’app proprement
     location.reload();
   };
+
   render() {
     if (!this.state.hasError) return this.props.children;
+
     return (
-      <div className="min-h-[60vh] grid place-items-center px-4">
-        <div className="w-full max-w-xl rounded-2xl border border-white/10 bg-white/5 p-6 text-white shadow-2xl">
-          <h2 className="text-2xl font-semibold text-center">Qualcosa è andato storto.</h2>
-          <p className="mt-2 text-white/70 text-sm break-words text-center">
-            {this.state.error?.message || "Errore sconosciuto."}
-          </p>
-          <div className="mt-5 flex justify-center gap-3">
-            <button className="btn btn-primary" onClick={this.handleReset}>Ricarica</button>
-            <button className="btn btn-ghost" onClick={() => history.back()}>Indietro</button>
-          </div>
-          <p className="mt-3 text-xs text-white/50 text-center">Se persiste, contatta il supporto CORE.</p>
-        </div>
+      <div style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
+        <h1 style={{ fontSize: 24, marginBottom: 8 }}>Quelque chose s’est mal passé.</h1>
+        <p style={{ marginBottom: 12 }}>
+          L’application a rencontré une erreur inattendue. Vous pouvez essayer de recharger.
+        </p>
+        <button
+          onClick={this.handleReset}
+          style={{
+            padding: "10px 14px",
+            borderRadius: 12,
+            border: "1px solid #ddd",
+            cursor: "pointer",
+          }}
+        >
+          Réessayer
+        </button>
+        {process.env.NODE_ENV !== "production" && this.state.error && (
+          <pre style={{ marginTop: 16, whiteSpace: "pre-wrap" }}>
+            {String(this.state.error?.stack || this.state.error)}
+          </pre>
+        )}
       </div>
     );
   }
