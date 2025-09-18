@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "prebuild": "vite optimize", 
+    "prebuild": "vite optimize",
     "build": "vite build",
     "preview": "vite preview"
   },
