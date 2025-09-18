@@ -2,33 +2,21 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CORE — Pianifica • Esegui • Controlla</title>
-    <meta
-      name="description"
-      content="CORE: pianificazione cantieri, report capi, versionamento tecnico e controllo capacità."
-    />
 
-    <!-- Favicons / OG -->
-    <link rel="icon" type="image/svg+xml" href="/assets/brand/core-logo-light.svg" />
-    <meta property="og:title" content="CORE — Pianifica • Esegui • Controlla" />
-    <meta property="og:image" content="/assets/brand/og-core-1200x630.png" />
-    <meta property="og:type" content="website" />
+    <!-- Manifeste PWA (optionnel si tu l'as ajouté) -->
+    <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- Preload brand -->
-    <link rel="preload" href="/assets/brand/core-logo-dark.svg" as="image" />
-    <link rel="preload" href="/assets/brand/core-logo-light.svg" as="image" />
-
-    <!-- Tailwind build -->
-    <link rel="stylesheet" href="/src/index.css" />
+    <!-- ✅ Preload corrigé (as="image"). Supprime si tu ne les utilises pas immédiatement. -->
+    <link rel="preload" as="image" href="/assets/brand/core-logo-dark.svg" />
+    <link rel="preload" as="image" href="/assets/brand/core-logo-light.svg" />
   </head>
   <body>
-    <a class="skip-to-content" href="#main">Salta al contenuto</a>
+    <a href="#main" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+      Salta al contenuto
+    </a>
     <div id="root"></div>
-
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
