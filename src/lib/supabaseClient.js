@@ -1,55 +1,30 @@
 // src/lib/supabaseClient.js
 import { createClient } from "@supabase/supabase-js";
 
-const url = import.meta.env?.VITE_SUPABASE_URL;
-const key = import.meta.env?.VITE_SUPABASE_ANON_KEY;
+/**
+ * ✅ MODE RÉEL (obligatoire)
+ * Ces variables doivent être définies dans Netlify → Site settings → Build & deploy → Environment
+ * - VITE_SUPABASE_URL
+ * - VITE_SUPABASE_ANON_KEY
+ */
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// MODE DEMO: client factice si variables manquantes
-const demoSupabase = {
-  __demo: true,
-  from: () => ({
-    select: async () => ({ data: null, error: null }),
-    insert: async () => ({ data: null, error: { message: "Demo mode: no DB" } }),
-    update: async () => ({ data: null, error: { message: "Demo mode: no DB" } }),
-    delete: async () => ({ data: null, error: { message: "Demo mode: no DB" } }),
-    eq: () => demoSupabase.from()
-  }),
-  auth: {
-    async getSession() {
-      return { data: { session: null }, error: null };
-    },
-    onAuthStateChange(_cb) {
-      // Renvoie un objet compatible pour éviter les erreurs d’unsubscribe
-      return { data: { subscription: { unsubscribe() {} } } };
-    },
-    async signInWithPassword() {
-      return { data: null, error: { message: "Demo mode: auth disabled" } };
-    },
-    async signOut() {
-      return { error: null };
-    }
-  }
-};
-
-let supabase = demoSupabase;
-let isDemo = true;
-
-try {
-  if (url && key) {
-    supabase = createClient(url, key, {
-      auth: { persistSession: true, autoRefreshToken: true }
-    });
-    isDemo = false;
-  } else {
-    console.warn(
-      "[supabase] VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY manquants — passage en DEMO (aucune écriture, pas d’auth)."
-    );
-  }
-} catch (e) {
-  console.error("[supabase] init error:", e);
-  // On reste en demoSupabase
-  supabase = demoSupabase;
-  isDemo = true;
+// Vérification stricte : on préfère échouer vite avec un message clair.
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  // Message explicite dans la console pour diagnostiquer en prod si besoin.
+  console.error(
+    "[CORE] Variables manquantes:",
+    { VITE_SUPABASE_URL: !!SUPABASE_URL, VITE_SUPABASE_ANON_KEY: !!SUPABASE_ANON_KEY }
+  );
+  throw new Error(
+    "Supabase configuration missing: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Netlify."
+  );
 }
 
-export { supabase, isDemo };
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
