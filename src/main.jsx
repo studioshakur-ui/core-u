@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { supabase } from "./lib/supabaseClient";
 import AppShell from "./AppShell.jsx";
+import ErrorBoundary from "./components/ErrorBoundary.jsx";
 
 // Pages
 import Login from "./pages/Login.jsx";
@@ -89,8 +90,10 @@ function AppRoutes() {
 const root = createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <HashRouter>
-      <AppRoutes />
-    </HashRouter>
+    <ErrorBoundary>
+      <HashRouter>
+        <AppRoutes />
+      </HashRouter>
+    </ErrorBoundary>
   </React.StrictMode>
 );
