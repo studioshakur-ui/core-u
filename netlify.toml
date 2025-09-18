@@ -1,11 +1,22 @@
+# netlify.toml — build rapide & stable pour Vite + React
+
 [build]
   command = "npm run build"
   publish = "dist"
-  functions = "netlify/functions"
+  # ⚠️ Si tu n'utilises PAS de Netlify Functions, supprime cette ligne pour éviter un temps de bundle inutile
+  # functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
+  # Limite le bruit et accélère npm
+  NPM_FLAGS = "--no-audit --no-fund --prefer-offline"
+  # + mémoire pour Vite/esbuild (utile avec exceljs/jspdf)
+  NODE_OPTIONS = "--max_old_space_size=4096"
+  # (tes clés restent dans l’UI Netlify)
+  # VITE_SUPABASE_URL
+  # VITE_SUPABASE_ANON_KEY
 
+# Cache-control: pas de cache pour index, cache agressif pour assets fingerprintés
 [[headers]]
   for = "/index.html"
   [headers.values]
@@ -16,6 +27,7 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# SPA fallback (ceinture + bretelles : utile même avec HashRouter, prêt si tu passes en BrowserRouter)
 [[redirects]]
   from = "/*"
   to = "/index.html"
