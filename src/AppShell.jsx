@@ -1,7 +1,6 @@
 // src/AppShell.jsx
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { isDemo } from "@/lib/supabaseClient";
 
 export default function AppShell() {
   const linkStyle = ({ isActive }) => ({
@@ -28,22 +27,7 @@ export default function AppShell() {
           zIndex: 10
         }}
       >
-        <div style={{ fontWeight: 800, display: "flex", alignItems: "center", gap: 8 }}>
-          CORE
-          {isDemo && (
-            <span style={{
-              fontSize: 12,
-              padding: "2px 8px",
-              borderRadius: 999,
-              background: "#fde68a",
-              border: "1px solid #f59e0b",
-              color: "#7c2d12",
-              marginLeft: 6
-            }}>
-              DEMO
-            </span>
-          )}
-        </div>
+        <div style={{ fontWeight: 800 }}>CORE</div>
         <nav style={{ display: "flex", gap: 8 }}>
           <NavLink to="/capo" style={linkStyle}>Capo</NavLink>
           <NavLink to="/manager" style={linkStyle}>Manager</NavLink>
