@@ -12,22 +12,20 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    // Log local + possibilité d’envoyer à un service (Sentry, etc.)
+    // Journalisation (console ou service externe type Sentry)
     console.error("[ErrorBoundary]", error, info);
   }
 
   handleReset = () => {
     this.setState({ hasError: false, error: null });
-    // Tentative “soft” de recovery en restant sur la route courante
-    // et en purgeant un éventuel cache local incomplet.
+    // Nettoyage léger du cache local (clés probables de l'app)
     try {
       const keys = Object.keys(localStorage || {});
-      // ne supprime que nos clés connues
       keys
         .filter((k) => k.startsWith("core_") || k.startsWith("sb-"))
         .forEach((k) => localStorage.removeItem(k));
     } catch {}
-    // Recharger l’app proprement
+    // Rechargement propre
     location.reload();
   };
 
@@ -51,6 +49,7 @@ export default class ErrorBoundary extends React.Component {
         >
           Réessayer
         </button>
+
         {process.env.NODE_ENV !== "production" && this.state.error && (
           <pre style={{ marginTop: 16, whiteSpace: "pre-wrap" }}>
             {String(this.state.error?.stack || this.state.error)}
