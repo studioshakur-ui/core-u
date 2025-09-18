@@ -1,8 +1,16 @@
+# netlify.toml
 [build]
   command = "npm run build"
   publish = "dist"
+  functions = "netlify/functions"
 
-# Cache et politique de fichiers
+[build.environment]
+  NODE_VERSION = "20"
+  # Les variables suivantes doivent déjà être définies dans ton dashboard Netlify
+  # VITE_SUPABASE_URL
+  # VITE_SUPABASE_ANON_KEY
+
+# Cache control: on évite de cacher index.html mais on maximise pour les assets
 [[headers]]
   for = "/index.html"
   [headers.values]
@@ -12,3 +20,9 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Redirection SPA: toutes les routes renvoient vers index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
