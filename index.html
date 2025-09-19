@@ -2,26 +2,63 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1" />
-    <title>CORE — test mount</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CORE — Pianifica • Esegui • Controlla</title>
 
-    <!-- Empêche le cache d'index.html -->
+    <!-- Anti-cache pour index.html -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+
+    <!-- Favicon/manifest (OK — ne déclenche PAS de SW tout seul) -->
+    <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/safari-pinned-tab.svg" />
+    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <meta name="theme-color" content="#0b1220" />
   </head>
   <body>
-    <!-- Skip link : c'est normal de le voir SI rien d'autre ne monte -->
+    <!-- Skip link : normal de le voir si rien n'a encore monté -->
     <a href="#main" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
       Salta al contenuto
     </a>
 
-    <!-- ⚠️ DOIT s’appeler exactement 'root' -->
     <div id="root"></div>
 
-    <!-- ⚠️ Import ESM direct du point d’entrée -->
-    <script type="module" src="/src/main.jsx"></script>
+    <!-- 🔥 KILLER SW + CACHES, AVANT TOUT -->
+    <script>
+      (function () {
+        try {
+          const FLAG = "__core_sw_cleanup_done__";
+          if (!sessionStorage.getItem(FLAG)) {
+            sessionStorage.setItem(FLAG, "1");
+            // 1) Unregister all service workers
+            if ("serviceWorker" in navigator) {
+              navigator.serviceWorker.getRegistrations().then((regs) => {
+                Promise.allSettled(regs.map((r) => r.unregister().catch(() => {}))).then(() => {
+                  // 2) Delete all caches
+                  if (window.caches && caches.keys) {
+                    caches.keys().then((keys) => {
+                      Promise.allSettled(keys.map((k) => caches.delete(k).catch(() => {}))).then(() => {
+                        // 3) Force a single reload so the new build is used
+                        location.reload();
+                      });
+                    });
+                  } else {
+                    location.reload();
+                  }
+                });
+              });
+            }
+          }
+        } catch (e) {
+          // On ne casse pas, on laisse l'app se charger
+          console.warn("[CORE] SW cleanup inline failed:", e);
+        }
+      })();
+    </script>
+
+    <!-- ⚠️ Versionne le point d’entrée pour busting (change la valeur si nécessaire) -->
+    <script type="module" src="/src/main.jsx?v=core-2025-09-19-01"></script>
   </body>
 </html>
