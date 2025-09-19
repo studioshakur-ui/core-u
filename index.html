@@ -2,30 +2,26 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CORE — Pianifica • Esegui • Controlla</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1" />
+    <title>CORE — test mount</title>
 
-    <!-- Anti-cache doux -->
+    <!-- Empêche le cache d'index.html -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-
-    <!-- Favicon/manifest -->
-    <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/svg+xml" href="/favicon/safari-pinned-tab.svg" />
-    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="/favicon/site.webmanifest" />
-    <meta name="theme-color" content="#0b1220" />
-
-    <!-- Preload (seulement si le logo est visible en haut) -->
-    <link rel="preload" as="image" href="/assets/brand/core-logo-light.svg" />
-    <link rel="preload" as="image" href="/assets/brand/core-logo-dark.svg" />
   </head>
   <body>
+    <!-- Skip link : c'est normal de le voir SI rien d'autre ne monte -->
     <a href="#main" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
       Salta al contenuto
     </a>
+
+    <!-- ⚠️ DOIT s’appeler exactement 'root' -->
     <div id="root"></div>
+
+    <!-- ⚠️ Import ESM direct du point d’entrée -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
