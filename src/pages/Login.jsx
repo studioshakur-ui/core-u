@@ -1,14 +1,27 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { signIn } from "@/auth/session";
+import { supabase } from "@/lib/supabaseClient";
+
+async function fetchRole(userId) {
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .maybeSingle();
+    if (error) throw error;
+    return data?.role || null;
+  } catch {
+    return null;
+  }
+}
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
-  const [role, setRole] = useState("capo");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
 
@@ -19,15 +32,25 @@ export default function Login() {
     setMsg(null);
     setLoading(true);
     try {
-      // Ici on “simule” la connexion (pas de vérification de mot de passe)
-      signIn({ email, role });
-
-      // Redirection par rôle
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password: pwd,
+      });
+      if (error) {
+        setMsg({ type: "error", text: error.message });
+        return;
+      }
+      const user = data?.user;
+      if (!user) {
+        setMsg({ type: "error", text: "Accesso fallito." });
+        return;
+      }
+      const role = await fetchRole(user.id);
       if (role === "direzione") navigate("/direzione", { replace: true });
       else if (role === "manager") navigate("/manager", { replace: true });
       else navigate("/capo", { replace: true });
-    } catch (e) {
-      setMsg({ type: "error", text: e?.message || "Errore inatteso" });
+    } catch (err) {
+      setMsg({ type: "error", text: err?.message || String(err) });
     } finally {
       setLoading(false);
     }
@@ -36,10 +59,6 @@ export default function Login() {
   return (
     <section style={{ maxWidth: 520 }}>
       <h1 style={{ marginTop: 0 }}>Accedi</h1>
-      <p style={{ marginTop: 0, color: "#475569" }}>
-        Questa è una autenticazione di <strong>maquette</strong> (senza Supabase).
-      </p>
-
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
         <label htmlFor="email" style={{ fontWeight: 600 }}>Email</label>
         <input
@@ -64,18 +83,6 @@ export default function Login() {
           required
           style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: 12 }}
         />
-
-        <label htmlFor="role" style={{ fontWeight: 600 }}>Ruolo</label>
-        <select
-          id="role"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: 12 }}
-        >
-          <option value="capo">Capo</option>
-          <option value="manager">Manager</option>
-          <option value="direzione">Direzione</option>
-        </select>
 
         <button
           type="submit"
