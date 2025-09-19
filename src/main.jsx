@@ -1,99 +1,38 @@
-import "./index.css";
-import React, { useEffect, useState } from "react";
+// src/main.jsx
+import React from "react";
 import { createRoot } from "react-dom/client";
-import { HashRouter, Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
-import { supabase, initError } from "@/lib/supabaseClient";
-import AppShell from "@/AppShell.jsx";
-import ErrorBoundary from "@/components/ErrorBoundary.jsx";
-import AppLoader from "@/components/AppLoader.jsx";
-import { swCleanup } from "@/utils/swCleanup.js";
 
-import Login from "@/pages/Login.jsx";
-import Capo from "@/pages/Capo.jsx";
-import ManagerHub from "@/pages/ManagerHub.jsx";
-import Direzione from "@/pages/Direzione.jsx";
-import AdminUsers from "@/pages/AdminUsers.jsx";
-import Diagnostics from "@/pages/Diagnostics.jsx";
+/** Petit logger de démarrage (visible en console) */
+console.log("[CORE:test] main.jsx loaded at", new Date().toISOString());
 
-swCleanup();
+/** Attrape toute erreur JS non gérée pour éviter l'écran blanc silencieux */
+window.addEventListener("error", (e) => {
+  console.error("[CORE:test] window error:", e?.error || e);
+});
+window.addEventListener("unhandledrejection", (e) => {
+  console.error("[CORE:test] unhandledrejection:", e?.reason || e);
+});
 
-async function fetchRole(userId){
-  try {
-    const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
-    return data?.role || null;
-  } catch { return null; }
-}
-
-function RequireAuth({ accept=["capo","manager","direzione"] }){
-  const [state, setState] = useState({ loading:true, user:null, role:null });
-
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      if (initError) { setState({ loading:false, user:null, role:null }); return; }
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const user = session?.user ?? null;
-        const role = user ? await fetchRole(user.id) : null;
-        if (alive) setState({ loading:false, user, role });
-      } catch {
-        if (alive) setState({ loading:false, user:null, role:null });
-      }
-    })();
-    const { data: sub } = supabase?.auth?.onAuthStateChange?.(async (_evt, sess) => {
-      const user = sess?.user ?? null;
-      const role = user ? await fetchRole(user.id) : null;
-      setState({ loading:false, user, role });
-    }) || { data:null };
-    return () => { alive=false; sub?.subscription?.unsubscribe?.(); };
-  }, []);
-
-  if (state.loading) return <AppLoader />;
-  if (initError) return <Navigate to="/diag" replace />;
-  if (!state.user) return <Navigate to="/login" replace />;
-
-  const role = state.role || "capo";
-  if (!accept.includes(role)) return <Navigate to="/capo" replace />;
-
-  return <Outlet/>;
-}
-
-function AppRoutes(){
-  const navigate = useNavigate();
-  useEffect(() => { if (location.hash === "#main") navigate("/", { replace:true }); }, [navigate]);
+/** Composant de test : zéro dépendance, juste du texte */
+function AppTest() {
   return (
-    <Routes>
-      <Route element={<AppShell />}>
-        <Route path="/" element={<Navigate to="/capo" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/diag" element={<Diagnostics />} />
-
-        <Route element={<RequireAuth accept={["capo","manager","direzione"]} />}>
-          <Route path="/capo" element={<Capo />} />
-        </Route>
-
-        <Route element={<RequireAuth accept={["manager","direzione"]} />}>
-          <Route path="/manager" element={<ManagerHub />} />
-        </Route>
-
-        <Route element={<RequireAuth accept={["direzione"]} />}>
-          <Route path="/direzione" element={<Direzione />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-        </Route>
-
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
-    </Routes>
+    <main id="main" style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
+      <h1 style={{ marginTop: 0 }}>CORE funziona ✅</h1>
+      <p>Se vedi questo messaggio, React è montato correttamente.</p>
+      <p style={{ color: "#475569" }}>
+        Ora possiamo reintrodurre Router, Supabase e il resto passo passo.
+      </p>
+    </main>
   );
 }
 
-const root = createRoot(document.getElementById("root"));
-root.render(
+/** Montage React strict */
+const rootEl = document.getElementById("root");
+if (!rootEl) {
+  throw new Error("Elemento #root non trovato nel DOM (index.html).");
+}
+createRoot(rootEl).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <HashRouter>
-        <AppRoutes />
-      </HashRouter>
-    </ErrorBoundary>
+    <AppTest />
   </React.StrictMode>
 );
