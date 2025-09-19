@@ -6,42 +6,18 @@ export default ({ mode }) => {
   loadEnv(mode, process.cwd(), "");
   return defineConfig({
     plugins: [react()],
-    resolve: {
-      alias: { "@": path.resolve(__dirname, "src") }
-    },
-    optimizeDeps: {
-      include: [
-        "react",
-        "react-dom",
-        "react-router-dom",
-        "zustand",
-        "dayjs",
-        "exceljs",
-        "jspdf",
-        "jspdf-autotable",
-        "html2canvas",
-        "clsx",
-        "localforage"
-      ]
-    },
+    resolve: { alias: { "@": path.resolve(__dirname, "src") } },
     build: {
-      sourcemap: true,
       outDir: "dist",
       target: "es2019",
-      modulePreload: { polyfill: false },
+      sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ["react", "react-dom", "react-router-dom"],
-            data: ["dayjs", "zustand", "localforage"],
-            heavy: ["exceljs", "jspdf", "jspdf-autotable", "html2canvas"]
+            vendor: ["react", "react-dom", "react-router-dom"]
           }
         }
-      },
-      commonjsOptions: { transformMixedEsModules: true }
-    },
-    define: {
-      "process.env.NODE_ENV": JSON.stringify(mode)
+      }
     }
   });
 };
