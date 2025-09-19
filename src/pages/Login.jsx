@@ -2,19 +2,28 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
+import { normalizeRole, pathForRole } from "@/lib/roles";
 
-async function fetchRole(userId) {
-  try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .maybeSingle();
-    if (error) throw error;
-    return data?.role || null;
-  } catch {
-    return null;
+async function fetchRoleOnce(userId) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
+  if (error) return null;
+  return normalizeRole(data?.role);
+}
+
+/** Réessaye la lecture du rôle (gère casse/espaces + latence de création du profil) */
+async function fetchRoleWithRetry(userId, tries = 4) {
+  let delay = 250;
+  for (let i = 0; i < tries; i++) {
+    const r = await fetchRoleOnce(userId);
+    if (r) return r;
+    await new Promise((res) => setTimeout(res, delay));
+    delay *= 2; // 250 → 500 → 1000 → 2000ms
   }
+  return null;
 }
 
 export default function Login() {
@@ -45,10 +54,11 @@ export default function Login() {
         setMsg({ type: "error", text: "Accesso fallito." });
         return;
       }
-      const role = await fetchRole(user.id);
-      if (role === "direzione") navigate("/direzione", { replace: true });
-      else if (role === "manager") navigate("/manager", { replace: true });
-      else navigate("/capo", { replace: true });
+
+      // Rôle robuste (normalisé + retry)
+      const role = await fetchRoleWithRetry(user.id);
+      const target = pathForRole(role);
+      navigate(target, { replace: true });
     } catch (err) {
       setMsg({ type: "error", text: err?.message || String(err) });
     } finally {
