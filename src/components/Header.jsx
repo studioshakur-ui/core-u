@@ -1,12 +1,27 @@
 // src/components/Header.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Logo from "@/components/Logo.jsx";
-import { getSession, signOut } from "@/auth/session";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Header() {
   const navigate = useNavigate();
-  const session = getSession();
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!alive) return;
+      setEmail(data?.session?.user?.email || "");
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_evt, sess) => {
+      setEmail(sess?.user?.email || "");
+    });
+    return () => {
+      alive = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
 
   const linkStyle = ({ isActive }) => ({
     padding: "8px 12px",
@@ -16,6 +31,11 @@ export default function Header() {
     background: isActive ? "#a7f3d0" : "transparent",
     fontWeight: 600,
   });
+
+  async function logout() {
+    await supabase.auth.signOut();
+    navigate("/login", { replace: true });
+  }
 
   return (
     <header
@@ -44,7 +64,7 @@ export default function Header() {
       </nav>
 
       <div>
-        {!session ? (
+        {!email ? (
           <button
             onClick={() => navigate("/login")}
             style={{
@@ -61,11 +81,9 @@ export default function Header() {
           </button>
         ) : (
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#475569", fontSize: 14 }}>
-              {session.email} • <strong>{session.role}</strong>
-            </span>
+            <span style={{ color: "#475569", fontSize: 14 }}>{email}</span>
             <button
-              onClick={() => { signOut(); navigate("/login", { replace: true }); }}
+              onClick={logout}
               style={{
                 padding: "8px 12px",
                 borderRadius: 12,
