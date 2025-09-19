@@ -1,38 +1,32 @@
 // src/main.jsx
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import AppShell from "@/AppShell.jsx";
 
-/** Petit logger de démarrage (visible en console) */
-console.log("[CORE:test] main.jsx loaded at", new Date().toISOString());
+import Capo from "@/pages/Capo.jsx";
+import Manager from "@/pages/Manager.jsx";
+import Direzione from "@/pages/Direzione.jsx";
 
-/** Attrape toute erreur JS non gérée pour éviter l'écran blanc silencieux */
-window.addEventListener("error", (e) => {
-  console.error("[CORE:test] window error:", e?.error || e);
-});
-window.addEventListener("unhandledrejection", (e) => {
-  console.error("[CORE:test] unhandledrejection:", e?.reason || e);
-});
-
-/** Composant de test : zéro dépendance, juste du texte */
-function AppTest() {
+function AppRoutes() {
   return (
-    <main id="main" style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
-      <h1 style={{ marginTop: 0 }}>CORE funziona ✅</h1>
-      <p>Se vedi questo messaggio, React è montato correttamente.</p>
-      <p style={{ color: "#475569" }}>
-        Ora possiamo reintrodurre Router, Supabase e il resto passo passo.
-      </p>
-    </main>
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route path="/" element={<Navigate to="/capo" replace />} />
+        <Route path="/capo" element={<Capo />} />
+        <Route path="/manager" element={<Manager />} />
+        <Route path="/direzione" element={<Direzione />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
   );
 }
 
-/** Montage React strict */
-const rootEl = document.getElementById("root");
-if (!rootEl) {
-  throw new Error("Elemento #root non trovato nel DOM (index.html).");
-}
-createRoot(rootEl).render(
+const root = createRoot(document.getElementById("root"));
+root.render(
   <React.StrictMode>
-    <AppTest />
+    <HashRouter>
+      <AppRoutes />
+    </HashRouter>
   </React.StrictMode>
 );
