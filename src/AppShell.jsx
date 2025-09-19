@@ -7,7 +7,7 @@ export default function AppShell() {
   return (
     <div id="main" style={{ minHeight: "100vh" }}>
       <Header />
-      <main style={{ padding: 24, maxWidth: 1200, margin: "0 auto" }}>
+      <main style={{ padding: 24 }}>
         <Outlet />
       </main>
     </div>
