@@ -4,29 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CORE — Pianifica • Esegui • Controlla</title>
-
-    <!-- Anti-cache pour index (côté client) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-
-    <!-- Favicon/manifest (facultatif, garde-les si tu les as) -->
-    <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/svg+xml" href="/favicon/safari-pinned-tab.svg" />
-    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-chrome-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon/android-chrome-512x512.png" />
+    <link rel="icon" href="/favicon/favicon.ico" />
     <meta name="theme-color" content="#0b1220" />
   </head>
   <body>
-    <!-- Le lien de saut est normal -->
-    <a href="#main" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
-      Salta al contenuto
-    </a>
-
+    <a href="#main" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Salta al contenuto</a>
     <div id="root"></div>
-
-    <!-- IMPORTANT : en source on pointe vers /src/main.jsx. 
-         Vite réécrira ça en /assets/index-xxxx.js dans dist/index.html -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

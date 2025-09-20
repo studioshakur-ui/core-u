@@ -1,36 +1,21 @@
 {
-  "name": "core-u",
-  "version": "1.0.0",
+  "name": "core-vite-supabase",
   "private": true,
-  "engines": {
-    "node": ">=20 <21",
-    "npm": ">=10"
-  },
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "vite optimize",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
-    "clsx": "^2.1.1",
-    "dayjs": "^1.11.13",
-    "exceljs": "^4.4.0",
-    "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1",
-    "jspdf-autotable": "^3.8.0",
-    "localforage": "^1.10.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.23.1",
-    "zustand": "^4.5.2"
+    "react-router-dom": "^6.26.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
-    "vite": "^5.2.0"
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.8"
   }
 }
