@@ -21,7 +21,7 @@ export default function HeroCore(){
         <div className="text-sm md:text-base uppercase tracking-[0.25em] opacity-90">Cable • Operations • Reporting • Engineering</div>
         <div className="mt-6 grid grid-cols-4 gap-2 md:gap-4">
           {list.map(([letter, word], idx)=> (
-            <div key={idx} className={"card backdrop-blur-sm bg-white/5 border-white/15 p-3 md:p-4 transition duration-300 "+(i===idx?'scale-105':'opacity-80')}>
+            <div key={idx} className={"card backdrop-blur-sm bg-white/5 border-white/20 p-3 md:p-4 transition duration-300 "+(i===idx?'scale-105':'opacity-80')}>
               <div className="text-xl md:text-2xl font-bold">{letter}</div>
               <div className="text-sm md:text-base">{word}</div>
             </div>
