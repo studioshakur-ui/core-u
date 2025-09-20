@@ -7,7 +7,7 @@ export default function Login(){
   const n=useNavigate(); const {lang,setLang,setSession,fetchProfile}=useAuthStore(); const t=T[lang];
   const [email,setEmail]=useState(''); const [password,setPassword]=useState(''); const [loading,setLoading]=useState(false); const [error,setError]=useState('');
   useEffect(()=>{(async()=>{ const {data}=await supabase.auth.getSession(); if(data.session){ await fetchProfile(); n('/'); } })();},[]);
-  const onSubmit=async(e)=>{ e.preventDefault(); setLoading(True); setError(''); const {data,error}=await supabase.auth.signInWithPassword({email,password}); setLoading(false); if(error) return setError(error.message); setSession(data.session); await fetchProfile(); n('/'); };
+  const onSubmit=async(e)=>{ e.preventDefault(); setLoading(true); setError(''); const {data,error}=await supabase.auth.signInWithPassword({email,password}); setLoading(false); if(error) return setError(error.message); setSession(data.session); await fetchProfile(); n('/'); };
   return (<div className='min-h-screen grid place-items-center p-4 relative overflow-hidden'>
     <img src='/assets/ships/ship-hero.jpg' alt='' className='absolute inset-0 w-full h-full object-cover opacity-40'/>
     <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent'/>
