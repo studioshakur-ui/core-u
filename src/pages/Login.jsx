@@ -1,68 +1,31 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/lib/supabaseClient";
-import { normalizeRole, pathForRole } from "@/lib/roles";
-
-async function fetchRoleOnce(userId) {
-  const { data, error } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
-  if (error) { console.error("[profiles] SELECT error:", error); return null; }
-  return normalizeRole(data?.role);
-}
-async function fetchRoleWithRetry(userId, tries = 4) {
-  let delay = 250;
-  for (let i = 0; i < tries; i++) {
-    const r = await fetchRoleOnce(userId);
-    if (r) return r;
-    await new Promise((res) => setTimeout(res, delay));
-    delay *= 2;
-  }
-  return null;
-}
-
-export default function Login() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [email, setEmail] = useState("");
-  const [pwd, setPwd] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState(null);
-  const from = (location.state && location.state.from) || "/";
-
-  async function onSubmit(e) {
-    e.preventDefault();
-    setMsg(null);
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pwd });
-      if (error) { setMsg({ type: "error", text: error.message }); return; }
-      const user = data?.user;
-      if (!user) { setMsg({ type: "error", text: "Accesso fallito." }); return; }
-      const role = await fetchRoleWithRetry(user.id);
-      const target = pathForRole(role);
-      navigate(target, { replace: true });
-    } catch (err) {
-      setMsg({ type: "error", text: err?.message || String(err) });
-    } finally { setLoading(false); }
-  }
-
-  return (<section style={{ maxWidth: 520 }}>
-    <h1 style={{ marginTop: 0 }}>Accedi</h1>
-    <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
-      <label htmlFor="email" style={{ fontWeight: 600 }}>Email</label>
-      <input id="email" type="email" autoComplete="username" placeholder="tuo@email.com"
-        value={email} onChange={(e) => setEmail(e.target.value)} required
-        style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: 12 }} />
-      <label htmlFor="pwd" style={{ fontWeight: 600 }}>Password</label>
-      <input id="pwd" type="password" autoComplete="current-password" placeholder="••••••••"
-        value={pwd} onChange={(e) => setPwd(e.target.value)} required
-        style={{ padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: 12 }} />
-      <button type="submit" disabled={loading}
-        style={{ marginTop: 6, padding: "10px 14px", borderRadius: 12, border: "1px solid #0ea5e9",
-                 background: loading ? "#93c5fd" : "#0ea5e9", color: "white", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer" }}>
-        {loading ? "Connessione…" : "Entra"}
-      </button>
-    </form>
-    {msg && (<p role="status" style={{ marginTop: 12, color: msg.type === "error" ? "#b91c1c" : "#166534", fontWeight: 600 }}>{msg.text}</p>)}
-    {from && from !== "/" && (<p style={{ marginTop: 12, fontSize: 12, color: "#64748b" }}>Dopo il login verrai reindirizzato verso <code>{from}</code>.</p>)}
-  </section>);
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
+import { useAuthStore } from "../store/useAuthStore";
+const T={it:{title:'Accedi',email:'Email',password:'Password',remember:'Ricordami',login:'Entra',forgot:'Password dimenticata?',support:'Supporto',legal:'Note legali',privacy:'Privacy',cookies:'Cookies'},fr:{title:'Connexion',email:'Email',password:'Mot de passe',remember:'Se souvenir de moi',login:'Se connecter',forgot:'Mot de passe oublié ?',support:'Support',legal:'Mentions légales',privacy:'Confidentialité',cookies:'Cookies'},en:{title:'Sign in',email:'Email',password:'Password',remember:'Remember me',login:'Sign in',forgot:'Forgot password?',support:'Support',legal:'Legal',privacy:'Privacy',cookies:'Cookies'}};
+export default function Login(){
+  const n=useNavigate(); const {lang,setLang,setSession,fetchProfile}=useAuthStore(); const t=T[lang];
+  const [email,setEmail]=useState(''); const [password,setPassword]=useState(''); const [loading,setLoading]=useState(false); const [error,setError]=useState('');
+  useEffect(()=>{(async()=>{ const {data}=await supabase.auth.getSession(); if(data.session){ await fetchProfile(); n('/'); } })();},[]);
+  const onSubmit=async(e)=>{ e.preventDefault(); setLoading(True); setError(''); const {data,error}=await supabase.auth.signInWithPassword({email,password}); setLoading(false); if(error) return setError(error.message); setSession(data.session); await fetchProfile(); n('/'); };
+  return (<div className='min-h-screen grid place-items-center p-4 relative overflow-hidden'>
+    <img src='/assets/ships/ship-hero.jpg' alt='' className='absolute inset-0 w-full h-full object-cover opacity-40'/>
+    <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent'/>
+    <div className='relative w-full max-w-md card p-6'>
+      <div className='flex items-center justify-between mb-4'>
+        <div className='flex items-center gap-2'><img src='/assets/brand/logo-mark.svg' alt='CORE' className='w-7 h-7'/><h1 className='text-2xl font-semibold'>{t.title}</h1></div>
+        <select className='bg-transparent border border-white/10 rounded p-1' value={lang} onChange={e=>setLang(e.target.value)}><option value='it'>IT</option><option value='fr'>FR</option><option value='en'>EN</option></select>
+      </div>
+      <form onSubmit={onSubmit} className='space-y-3'>
+        <label className='block'><span className='text-sm'>{t.email}</span><input type='email' className='input mt-1' value={email} onChange={e=>setEmail(e.target.value)} required/></label>
+        <label className='block'><span className='text-sm'>{t.password}</span><input type='password' className='input mt-1' value={password} onChange={e=>setPassword(e.target.value)} required/></label>
+        <div className='flex items-center justify-between'><label className='inline-flex items-center gap-2 text-sm opacity-80'><input type='checkbox' defaultChecked/>{t.remember}</label><a className='text-sm link' href='/reset-password'>{t.forgot}</a></div>
+        {error && <div className='text-red-400 text-sm'>{error}</div>}
+        <button type='submit' disabled={loading} className='btn-primary w-full'>{loading?'...':t.login}</button>
+      </form>
+      <div className='flex items-center justify-between mt-4 text-sm opacity-80'>
+        <a href='/legal' className='link'>{t.legal}</a><a href='/privacy' className='link'>{t.privacy}</a><a href='/cookies' className='link'>{t.cookies}</a><a href='mailto:support@example.com' className='link'>{t.support}</a>
+      </div>
+    </div>
+  </div>);
 }

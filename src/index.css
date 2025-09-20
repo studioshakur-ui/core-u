@@ -1,7 +1,8 @@
-:root { color-scheme: light dark; }
-* { box-sizing: border-box; }
-html, body, #root { height: 100%; margin: 0; }
-body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background:#ffffff; color:#0f172a; }
-a { color: inherit; }
-button, input { font: inherit; }
-:focus-visible { outline: 2px solid #0ea5e9; outline-offset: 2px; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root { color-scheme: dark; }
+.btn-primary { @apply inline-flex items-center justify-center px-3 py-2 rounded-lg bg-core-accent text-black font-semibold transition duration-200 ease-out-quad hover:bg-core-accentHover active:bg-core-accentPressed; }
+.card { @apply bg-core-card rounded-xl2 border border-white/10 shadow-e1; }
+.input { @apply w-full rounded border border-white/10 bg-white/5 p-2 focus:outline-none focus:ring-2 focus:ring-core-accent/60; }
+.link { @apply underline decoration-white/30 hover:decoration-white; }

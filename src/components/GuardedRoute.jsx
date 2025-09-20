@@ -1,0 +1,1 @@
+import React from 'react'; import { Navigate } from 'react-router-dom'; import { useAuthStore } from '../store/useAuthStore'; export default function GuardedRoute({allow=[],children}){ const {profile}=useAuthStore(); if(!profile) return <Navigate to='/login' replace/>; if(allow.length && !allow.includes(profile.role)) return <Navigate to='/login' replace/>; return children; }

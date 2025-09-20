@@ -1,12 +1,11 @@
 import React from "react";
-import { useSession } from "../hooks/useSession";
-
+import { useAuthStore } from "../store/useAuthStore";
 export default function HeaderStatus(){
-  const { session } = useSession();
-  return (
-    <span className="inline-flex items-center gap-2 text-sm text-white/80">
-      <span className={"h-2 w-2 rounded-full " + (session ? "bg-emerald-400" : "bg-rose-400")}></span>
-      {session ? "Connesso" : "Non connesso"}
-    </span>
-  );
+  const { profile } = useAuthStore();
+  return (<header className="w-full p-3 flex items-center justify-between bg-core-card shadow-e2 sticky top-0 z-20">
+    <div className="flex items-center gap-2">
+      <img src="/assets/brand/logo-mark.svg" alt="CORE" className="w-7 h-7"/><div className="font-bold tracking-wide">CORE</div>
+    </div>
+    <div className="text-sm opacity-80">{profile?.role ? <span className="px-2 py-1 rounded bg-core-accent/15 border border-core-accent/40">{profile.role.toUpperCase()}</span> : <span className="px-2 py-1 rounded bg-white/5 border border-white/10">OFFLINE</span>}</div>
+  </header>);
 }

@@ -1,27 +1,26 @@
-// tailwind.config.js
-/** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}"
-  ],
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
         core: {
-          50:  "#f7f5ff",
-          100: "#eee9ff",
-          200: "#dac8ff",
-          300: "#c3a0ff",
-          400: "#a86dff",
-          500: "#8f3dff",
-          600: "#7a25f2",
-          700: "#671fd1",
-          800: "#4d18a0",
-          900: "#37126f"
+          bg: "#0b0b12",
+          card: "#141421",
+          text: "#ECECF3",
+          muted: "#6B6B80",
+          accent: "#8B5CF6",
+          accentHover: "#A78BFA",
+          accentPressed: "#7C3AED"
         }
-      }
+      },
+      boxShadow: {
+        e1: "0 4px 12px rgba(0,0,0,0.24)",
+        e2: "0 10px 30px rgba(0,0,0,0.28)",
+        e3: "0 24px 60px rgba(0,0,0,0.36)"
+      },
+      borderRadius: { xl2: "1.25rem" },
+      transitionTimingFunction: { "out-quad": "cubic-bezier(0.25, 0.46, 0.45, 0.94)" }
     }
   },
-  plugins: [],
+  plugins: []
 };
