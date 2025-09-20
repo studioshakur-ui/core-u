@@ -1,8 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 :root { color-scheme: dark; }
-.btn-primary { @apply inline-flex items-center justify-center px-3 py-2 rounded-lg bg-core-accent text-black font-semibold transition duration-200 ease-out-quad hover:bg-core-accentHover active:bg-core-accentPressed; }
-.card { @apply bg-core-card rounded-xl2 border border-white/10 shadow-e1; }
-.input { @apply w-full rounded border border-white/10 bg-white/5 p-2 focus:outline-none focus:ring-2 focus:ring-core-accent/60; }
+
+.lv-bg {
+  @apply bg-core-bg;
+  background-image: theme('backgroundImage.lv-damier'), theme('backgroundImage.lv-damier');
+  background-size: theme('backgroundSize.damier'), theme('backgroundSize.damier');
+  background-position: 0 0, 20px 20px;
+}
+
+.btn-primary { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-core-accent text-black font-semibold transition duration-200 ease-out hover:bg-core-accentHover active:bg-core-accentPressed; }
+.card { @apply bg-core-card rounded-xl2 border border-white/12 shadow-e2; }
+.input { @apply w-full rounded border border-white/12 bg-white/5 p-2 focus:outline-none focus:ring-2 focus:ring-core-accent/60; }
 .link { @apply underline decoration-white/30 hover:decoration-white; }
+.focus-ring { @apply focus:outline-none focus:ring-2 focus:ring-core-accent/60; }
+.kpi { @apply card p-4; }
+.badge { @apply inline-flex items-center gap-1 px-2 py-1 rounded text-xs border; }

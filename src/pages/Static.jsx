@@ -1,1 +1,1 @@
-import React from 'react'; export default function Static({title}){ return (<div className='min-h-screen p-6'><div className='max-w-2xl mx-auto card p-6'><h1 className='text-2xl font-semibold mb-2'>{title}</h1><p className='opacity-80 text-sm'>Contenu à compléter.</p></div></div>); }
+import React from 'react'; export default function Static({title}){ return (<div className='min-h-screen p-6 lv-bg'><div className='max-w-2xl mx-auto card p-6'><h1 className='text-2xl font-semibold mb-2'>{title}</h1><p className='opacity-80 text-sm'>Contenu à compléter.</p></div></div>); }

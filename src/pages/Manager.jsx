@@ -1,32 +1,119 @@
-import React, { useState } from "react";
-import GuardedRoute from "../components/GuardedRoute";
-import HeaderStatus from "../components/HeaderStatus";
+import React, { useRef, useState } from "react";
+import Header from "../components/Header";
+import { useAppStore } from "../store/useAppStore";
+import { T } from "../i18n";
+import * as XLSX from "xlsx";
 import Papa from "papaparse";
-import HeaderPage from "../components/HeaderPage";
-import Toast from "../components/Toast";
-function ManagerInner(){
-  const [step,setStep]=useState(1); const [rawCsv,setRawCsv]=useState(null); const [preview,setPreview]=useState([]);
-  const [mapping,setMapping]=useState({name:'Name',role:'Role',team:'Team'}); const [errors,setErrors]=useState([]);
-  const onFile=e=>{ const file=e.target.files?.[0]; if(!file) return; Papa.parse(file,{header:true,skipEmptyLines:true,complete:(res)=>{ setRawCsv(res.data); setPreview(res.data.slice(0,10)); setStep(2); }}); };
-  const runDry=()=>{ const errs=[]; (rawCsv||[]).forEach((r,i)=>{ if(!r[mapping.name]) errs.push({row:i+1,msg:'Name mancante'}); if(!r[mapping.role]) errs.push({row:i+1,msg:'Role mancante'}); }); setErrors(errs); setStep(3); };
-  return (<div><HeaderStatus/><main className='p-6 space-y-4'>
-    <HeaderPage title='Manager — Import Wizard' subtitle='Fichier → Mapping → Dry-run' image='/assets/ships/ship-ambient.jpg'/>
-    <div className='card p-4'>
-      <div className='flex gap-2 mb-4 text-sm'>
-        <div className={`px-2 py-1 rounded ${step>=1?'bg-core-accent text-black':'bg-white/5'}`}>1. Fichier</div>
-        <div className={`px-2 py-1 rounded ${step>=2?'bg-core-accent text-black':'bg-white/5'}`}>2. Mapping</div>
-        <div className={`px-2 py-1 rounded ${step>=3?'bg-core-accent text-black':'bg-white/5'}`}>3. Dry-run</div>
+
+export default function Manager(){
+  const { lang } = useAppStore(); const t=T[lang].manager;
+  const [raw,setRaw] = useState([]);
+  const [mapping,setMapping] = useState({date:"date", team:"team", capo_email:"capo_email", activity:"activity", hours:"hours", note:"note"});
+  const [errors,setErrors]=useState([]); const [valid,setValid]=useState([]);
+  const fileRef = useRef(null);
+
+  const onFile = (f)=>{
+    if(!f) return;
+    const name = f.name.toLowerCase();
+    if(name.endsWith(".csv")) {
+      Papa.parse(f,{header:true,skipEmptyLines:true,complete:(res)=>setRaw(res.data)});
+    } else {
+      const fr = new FileReader();
+      fr.onload = (e)=>{
+        const wb = XLSX.read(new Uint8Array(e.target.result), {type:"array"});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        setRaw(XLSX.utils.sheet_to_json(ws, {defval:""}));
+      };
+      fr.readAsArrayBuffer(f);
+    }
+  };
+
+  const onPaste = (e)=>{
+    const text = e.clipboardData.getData("text");
+    const rows = Papa.parse(text, {header:true}).data;
+    if(rows?.length) setRaw(rows);
+  };
+
+  const dryRun = ()=>{
+    const errs=[]; const val=[];
+    raw.forEach((r,i)=>{
+      const rowNo=i+2;
+      const line={
+        date: r[mapping.date], team: r[mapping.team], capo_email: r[mapping.capo_email],
+        activity: r[mapping.activity], hours: parseFloat(String(r[mapping.hours]).replace(',','.')), note: r[mapping.note]||""
+      };
+      if(!line.activity) errs.push({row:rowNo,field:"activity",msg:"attività vuota"});
+      if(isNaN(line.hours) || line.hours<0 || line.hours>12) errs.push({row:rowNo,field:"hours",msg:"ore 0–12"});
+      if(!line.team) errs.push({row:rowNo,field:"team",msg:"team mancante"});
+      if(!line.capo_email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(line.capo_email)) errs.push({row:rowNo,field:"capo_email",msg:"email capo non valida"});
+      if(line.date && isNaN(Date.parse(line.date))) errs.push({row:rowNo,field:"date",msg:"data non valida"});
+      if(!errs.find(e=>e.row===rowNo)) val.push(line);
+    });
+    setErrors(errs); setValid(val);
+  };
+
+  const downloadCsv=(filename, rows)=>{
+    const headers = Object.keys(rows[0] || { row:"", field:"", msg:"" });
+    const csv = [headers.join(",")].concat(rows.map(r => headers.map(h => `"${String(r[h]??'').replace(/"/g,'""')}"`).join(","))).join("\n");
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob); const a=document.createElement("a");
+    a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url);
+  };
+
+  return (<div onPaste={onPaste}>
+    <Header/>
+    <main className="p-6 grid gap-4">
+      <div className="card p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-xl font-semibold">{t.title}</h1>
+          <div className="flex items-center gap-2">
+            <input ref={fileRef} type="file" className="hidden" accept=".csv,.xlsx,.xls" onChange={e=>onFile(e.target.files?.[0])}/>
+            <button className="btn-primary" onClick={()=>fileRef.current?.click()}>{t.import}</button>
+            <button className="btn-primary" onClick={dryRun}>Dry-run</button>
+          </div>
+        </div>
+        <div className="grid md:grid-cols-3 gap-3 mb-3">
+          {Object.keys(mapping).map(k=>(
+            <label key={k} className="text-sm">
+              <div className="opacity-80 mb-1">Map “{k}”</div>
+              <input className="input" value={mapping[k]} onChange={e=>setMapping(s=>({...s,[k]:e.target.value}))}/>
+            </label>
+          ))}
+        </div>
+        <div className="text-sm opacity-80 mb-2">{t.pasteHint}</div>
+        <div className="max-h-64 overflow-auto border border-white/10 rounded">
+          <table className="w-full text-sm">
+            <thead className="opacity-80">
+              <tr>{raw[0] && Object.keys(raw[0]).map(h=><th key={h} className="p-2 text-left">{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {raw.slice(0,20).map((r,i)=>(<tr key={i} className="border-t border-white/10">{Object.values(r).map((v,j)=><td key={j} className="p-2">{String(v)}</td>)}</tr>))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      {step===1 && (<div className='space-y-3'><input type='file' accept='.csv' onChange={onFile}/><p className='opacity-80 text-sm'>Accepte: CSV (Excel → Enregistrer sous → CSV UTF-8)</p></div>)}
-      {step===2 && (<div className='space-y-3'>
-        <div className='grid grid-cols-3 gap-3'>{['name','role','team'].map(k=>(<label key={k} className='text-sm'><div className='opacity-80 mb-1'>Champ {k}</div><input className='input' value={mapping[k]} onChange={e=>setMapping(s=>({...s,[k]:e.target.value}))}/></label>))}</div>
-        <div className='mt-3'><div className='text-sm opacity-80 mb-1'>Prévisualisation (10 lignes)</div>
-          <div className='max-h-64 overflow-auto border border-white/10 rounded'><table className='w-full text-sm'>
-            <thead className='opacity-70'><tr>{preview[0] && Object.keys(preview[0]).map(h=><th key={h} className='p-2 text-left'>{h}</th>)}</tr></thead>
-            <tbody>{preview.map((r,i)=>(<tr key={i} className='border-t border-white/5'>{Object.values(r).map((v,j)=><td key={j} className='p-2'>{String(v)}</td>)}</tr>))}</tbody>
-          </table></div></div>
-        </div>)}
-      {step===3 && (<div className='space-y-3'><div className='text-sm opacity-80'>Résultats du dry-run</div>{errors.length===0?<Toast kind='success'>Aucune erreur détectée. Prêt pour l'import.</Toast>:(<div className='p-3 rounded bg-red-600/20 border border-red-600/30'><div className='mb-2 font-semibold'>{errors.length} erreurs</div><ul className='list-disc pl-5'>{errors.map((e,i)=><li key={i}>Ligne {e.row}: {e.msg}</li>)}</ul></div>)}</div>)}
-    </div>
-  </main></div>);}
-export default function Manager(){ return (<GuardedRoute allow={['manager','direzione']}><ManagerInner/></GuardedRoute>); }
+
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="card p-4">
+          <div className="font-semibold mb-2">{t.anomalies}</div>
+          <div className="text-sm mb-2">Errors: <b>{errors.length}</b></div>
+          <div className="flex gap-2">
+            <button className="btn-primary" onClick={()=>errors.length && downloadCsv("import-errors.csv", errors)} disabled={!errors.length}>{T[lang].common.export}</button>
+          </div>
+          <div className="mt-3 max-h-48 overflow-auto">
+            <ul className="list-disc pl-5 text-sm">{errors.map((e,i)=><li key={i}>riga {e.row} • {e.field}: {e.msg}</li>)}</ul>
+          </div>
+        </div>
+        <div className="card p-4">
+          <div className="font-semibold mb-2">Valid</div>
+          <div className="text-sm">Rows: <b>{valid.length}</b></div>
+          <div className="text-sm">Ore totali: <b>{valid.reduce((a,b)=>a+(b.hours||0),0)}</b></div>
+        </div>
+        <div className="card p-4">
+          <div className="font-semibold mb-2">{t.capacity}</div>
+          <div className="text-sm opacity-80">Setup capacità settimana paramétrable (placeholder).</div>
+        </div>
+      </div>
+    </main>
+  </div>);
+}

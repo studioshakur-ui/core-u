@@ -1,7 +1,38 @@
 import React from "react";
-import GuardedRoute from "../components/GuardedRoute";
-import HeaderStatus from "../components/HeaderStatus";
-import HeaderPage from "../components/HeaderPage";
-function KpiCard({label,value,delta}){ const isUp=(delta??0)>=0; return (<div className='card p-4'><div className='text-sm opacity-80'>{label}</div><div className='text-2xl font-semibold'>{value}</div><div className={`text-sm ${isUp?'text-green-400':'text-red-400'}`}>{isUp?'▲':'▼'} {Math.abs(delta??0)} vs S-1</div></div>); }
-function DirezioneInner(){ const kpis=[{label:'Capacité totale (h)',value:640,delta:16},{label:'Assignés (h)',value:540,delta:-12},{label:'Non-assignés (h)',value:100,delta:20},{label:'Couverture (%)',value:'84%',delta:-2},{label:'Coût estimé (€)',value:22*540,delta:180}]; const locked=false; return (<div><HeaderStatus/><main className='p-6 space-y-4'><HeaderPage title='Direzione — KPIs' subtitle='Δ vs S-1, coûts estimés, statut de semaine' image='/assets/ships/ship-cruise.jpg'/><div className='grid md:grid-cols-3 gap-4'>{kpis.map((k,i)=><KpiCard key={i} {...k}/>)}</div><div className='flex items-center gap-3'><span className={`px-2 py-1 rounded text-sm ${locked?'bg-yellow-500/20 border border-yellow-500/30':'bg-green-500/20 border border-green-500/30'}`}>{locked?'Semaine verrouillée':'Brouillon'}</span><button className='btn-primary'>Verrouiller la semaine</button></div></main></div>); }
-export default function Direzione(){ return (<GuardedRoute allow={['direzione','manager']}><DirezioneInner/></GuardedRoute>); }
+import Header from "../components/Header";
+import { useAppStore } from "../store/useAppStore";
+import { T } from "../i18n";
+
+export default function Direzione(){
+  const { lang } = useAppStore(); const t=T[lang].direzione;
+  const locked=false;
+  const kpis=[
+    {label:"Capacità totale (h)", value:"—", delta:"—"},
+    {label:"Assegnati (h)", value:"—", delta:"—"},
+    {label:"Copertura (%)", value:"—", delta:"—"},
+    {label:"Heures validate", value:"—", delta:"—"},
+    {label:"Δ S vs S-1", value:"—", delta:"—"},
+    {label:"Coût estimé (€)", value:"—", delta:"—"},
+  ];
+  return (<div>
+    <Header/>
+    <main className="p-6 grid gap-4">
+      <div className="flex items-center gap-3">
+        <h1 className="text-xl font-semibold">{t.title}</h1>
+        <span className={`badge ${locked?'bg-green-500/20 border-green-500/40':'bg-yellow-500/20 border-yellow-500/40'}`}>{locked?t.locked:t.unlocked}</span>
+      </div>
+      <div className="grid md:grid-cols-3 gap-4">{kpis.map((k,i)=>(<div key={i} className="kpi"><div className="text-sm opacity-80">{k.label}</div><div className="text-2xl font-semibold">{k.value}</div><div className="text-sm opacity-70">{k.delta}</div></div>))}</div>
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="card p-4">
+          <div className="font-semibold mb-2">{t.risks}</div>
+          <div className="text-sm opacity-80">Aucun risque (placeholder).</div>
+        </div>
+        <div className="card p-4">
+          <div className="font-semibold mb-2">{t.next}</div>
+          <ol className="list-decimal pl-5 text-sm opacity-90"><li>Configurer les seuils KPI.</li><li>Importer le planning.</li><li>Valider la semaine.</li></ol>
+        </div>
+      </div>
+      <div><button className="btn-primary">{t.executiveExport}</button></div>
+    </main>
+  </div>);
+}
