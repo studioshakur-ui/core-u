@@ -1,24 +1,8 @@
-{
-  "name": "core-vite-supabase",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "engines": {
-    "node": ">=18.17 <21"
-  },
-  "scripts": {
-    "dev": "vite",
-    "build": "node --trace-warnings ./node_modules/vite/bin/vite.js build --debug",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "2.45.4",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "react-router-dom": "6.26.2"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "4.3.1",
-    "vite": "5.4.8"
-  }
+"devDependencies": {
+  "vite": "^5.4.8",
+  "@vitejs/plugin-react": "^4.3.1",
+  "@vitejs/plugin-legacy": "^5.4.0",
+  "tailwindcss": "^3.4.13",
+  "postcss": "^8.4.47",
+  "autoprefixer": "^10.4.20"
 }
