@@ -2,8 +2,7 @@
 export default {
   content: ['./index.html','./src/**/*.{js,jsx}'],
   theme: {
-    extend: {
-      colors: {
+    \1 brand: { violet: '#6C5CE7', dark: '#121212', light: '#F5F5F5', white: '#FFFFFF' },
         core: {
           green: '#14B85A', /* verde Capo signature (non Spotify) */
           petrol: '#005F73',

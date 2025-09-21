@@ -8,3 +8,23 @@
 .btn-primary { @apply btn bg-core-green text-white hover:bg-green-600; }
 .btn-ghost { @apply btn bg-white border border-gray-200 text-gray-800 hover:bg-gray-100; }
 .card { @apply bg-white rounded-2xl shadow-card; }
+
+/* === CORE v9 theme additions === */
+
+:root{
+  --brand-violet:#6C5CE7;
+  --brand-dark:#121212;
+  --brand-light:#F5F5F5;
+  --brand-white:#FFFFFF;
+  --ring: 0 0 0 4px rgba(108,92,231,0.35);
+}
+
+.brand-bg { background-color: var(--brand-light); }
+.brand-card { background-color: var(--brand-white); border-radius: 1rem; box-shadow: 0 10px 20px rgba(0,0,0,0.06); }
+.brand-accent { color: var(--brand-violet); }
+.brand-accent-bg { background-color: var(--brand-violet); color: white; }
+.brand-hero {
+  background: radial-gradient(60% 60% at 50% 20%, rgba(108,92,231,0.12) 0%, rgba(108,92,231,0.06) 38%, rgba(108,92,231,0.0) 70%) , var(--brand-light);
+}
+*:focus { outline: none; box-shadow: var(--ring); }
+

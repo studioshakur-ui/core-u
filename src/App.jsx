@@ -47,7 +47,7 @@ export default function App(){
           </div>
         </div>
       </nav>
-      <main className="max-w-6xl mx-auto">
+      <main className="brand-hero" className="max-w-6xl mx-auto">
         <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/manager" element={<Manager/>}/>

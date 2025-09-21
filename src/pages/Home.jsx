@@ -13,7 +13,7 @@ export default function Home(){
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">CORE — Cable Operations Reporting & Engineering</h1>
           <p className="mt-4 text-lg text-white/80 max-w-3xl">Pianifica squadre, compila i rapportini e visualizza i KPI in modo rapido e preciso.</p>
           <div className="mt-8 flex gap-3">
-            <button onClick={()=>setOpen(true)} className="btn-primary">Accedi</button>
+            <button onClick={()=>setOpen(true)} className="brand-accent-bg">Accedi</button>
             <a href="#features" className="btn-ghost">Scopri le funzionalità</a>
           </div>
         </div>
