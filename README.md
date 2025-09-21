@@ -1,19 +1,3 @@
-# CORE v8.4 — JS/JSX + Tailwind
+# CORE v8.5.1-light
 
-Pur JavaScript + JSX (pas de TypeScript, pas de CJS).  
-Assets dans `/public` (logos + ships).
-
-## Démarrer
-```bash
-npm install
-npm run dev
-```
-
-## Build & Netlify
-```bash
-npm run build
-```
-Publish: `dist`
-
-### Astuce si Netlify gardait l'ancien `index.html`
-Vérifie que la balise script pointe bien vers `/src/main.jsx`.
+Versione leggera completa con Home, Manager, Capo, Direzione e login Supabase.

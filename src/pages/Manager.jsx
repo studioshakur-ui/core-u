@@ -1,10 +1,2 @@
 import React from 'react'
-
-export default function Manager() {
-  return (
-    <section className="p-4">
-      <h2 className="text-xl font-semibold text-green-700">Gestione Squadre</h2>
-      <p className="text-gray-600">Crea, valida e gestisci le tue squadre con operai e capi.</p>
-    </section>
-  )
-}
+export default function Manager(){return(<section className='p-6'><h2 className='text-2xl font-bold mb-4'>Gestione Squadre</h2><div className='p-4 border rounded'>Squadra esempio</div></section>)}

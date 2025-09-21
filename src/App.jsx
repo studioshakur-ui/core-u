@@ -1,40 +1,34 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import Home from './pages/Home.jsx'
 import Manager from './pages/Manager.jsx'
 import Capo from './pages/Capo.jsx'
 import Direzione from './pages/Direzione.jsx'
+import { supabase } from './lib/supabase.js'
 
-export default function App() {
-  const [tab, setTab] = useState('Manager')
-  const tabs = ['Manager', 'Capo', 'Direzione']
+export default function App(){
+  const [session,setSession]=useState(null)
+  const navigate=useNavigate()
 
-  const Current = tab === 'Manager' ? Manager : tab === 'Capo' ? Capo : Direzione
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data})=>setSession(data.session))
+    const { data:sub }=supabase.auth.onAuthStateChange((_e,s)=>{ setSession(s); if(!s) navigate('/') })
+    return ()=> sub?.subscription.unsubscribe()
+  },[])
 
-  return (
-    <div style={{minHeight:'100vh',background:'#f5f7f9'}}>
-      <nav style={{
-        position:'sticky',top:0,zIndex:10,background:'rgba(255,255,255,0.9)',
-        backdropFilter:'blur(8px)',borderBottom:'1px solid #e5e7eb'
-      }}>
-        <div style={{maxWidth:1120,margin:'0 auto',padding:'12px 16px',display:'flex',alignItems:'center',gap:12}}>
-          <img src="/logo-core.svg" alt="CORE" style={{height:24}}/>
-          <strong style={{marginRight:12}}>CORE</strong>
-          {tabs.map(t => (
-            <button key={t}
-              onClick={() => setTab(t)}
-              style={{
-                padding:'8px 12px',borderRadius:10,border:'1px solid #e5e7eb',
-                background: tab===t ? '#16a34a' : '#fff',
-                color: tab===t ? '#fff' : '#111827',
-                cursor:'pointer'
-              }}>
-              {t}
-            </button>
-          ))}
-        </div>
-      </nav>
-      <main style={{maxWidth:1120,margin:'0 auto'}}>
-        <Current />
-      </main>
-    </div>
-  )
+  return (<div>
+    <nav className="bg-white shadow px-4 py-2 flex gap-4">
+      <Link to="/">Home</Link>
+      <Link to="/manager">Manager</Link>
+      <Link to="/capo">Capo</Link>
+      <Link to="/direzione">Direzione</Link>
+      {session && <button onClick={()=>supabase.auth.signOut()}>Esci</button>}
+    </nav>
+    <Routes>
+      <Route path="/" element={<Home/>}/>
+      <Route path="/manager" element={<Manager/>}/>
+      <Route path="/capo" element={<Capo/>}/>
+      <Route path="/direzione" element={<Direzione/>}/>
+    </Routes>
+  </div>)
 }

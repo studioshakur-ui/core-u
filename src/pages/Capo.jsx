@@ -1,10 +1,2 @@
 import React from 'react'
-
-export default function Capo() {
-  return (
-    <section className="p-4">
-      <h2 className="text-xl font-semibold text-green-700">Rapportino Giornaliero</h2>
-      <p className="text-gray-600">Compila il tuo rapportino utilizzando il catalogo attività pre-caricato.</p>
-    </section>
-  )
-}
+export default function Capo(){return(<section className='p-6'><h2 className='text-2xl font-bold mb-4'>Rapportino Giornaliero</h2><table className='w-full border'><thead><tr><th>Operatore</th><th>Attività</th><th>Ore</th></tr></thead><tbody><tr><td>Maiga Hamidou</td><td>STESURA DIRETTIVA</td><td>8h</td></tr></tbody></table></section>)}
