@@ -1,6 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import '@/styles/index.css'
-import { App } from './App'
-import { ToastProvider } from '@/components/Toast'
-ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><ToastProvider><App /></ToastProvider></React.StrictMode>)
+import App from './App'
+import './styles/globals.css'
+import './styles/tailwind.css'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)

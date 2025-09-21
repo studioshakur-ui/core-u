@@ -1,27 +1,20 @@
 {
-  "name": "core-v8-2-2",
-  "version": "8.2.2",
+  "name": "core-v8-4",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --port 4173 --strictPort"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@dnd-kit/core": "^6.1.0",
-    "@dnd-kit/sortable": "^8.0.0",
-    "@supabase/supabase-js": "^2.45.0",
-    "exceljs": "^4.4.0",
-    "immer": "^10.1.1",
-    "jspdf": "^2.5.2",
-    "jspdf-autotable": "^3.8.2",
-    "papaparse": "^5.4.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.0.0",
+    "@radix-ui/react-toast": "^1.1.5",
+    "@tabler/icons-react": "^3.21.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.1",
-    "xlsx": "^0.18.5",
-    "zustand": "^4.5.4"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",
@@ -29,7 +22,9 @@
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.13",
-    "vite": "^5.4.8"
+    "tailwindcss": "^3.4.12",
+    "@tailwindcss/forms": "^0.5.9",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.6"
   }
 }

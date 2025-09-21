@@ -1,15 +1,24 @@
-# CORE v8.2.2
+# CORE v8.4 — Design System (Tailwind + React)
 
-React + Vite + Tailwind + Supabase. Auth email/password (no magic link). RBAC minimal.
-Replace files on GitHub, set env on Netlify, deploy.
+Moodboard implémenté : palette, typos, tokens, focus ring AA, motions 160–220ms, composants de base (Button, Input, Select, Card, Badge/Status, KPI, Toast, DragHalo) et pages exemples (Accedi, Manager, Capo, Direzione, Catalogo).
 
-## Setup
-1. Copy all files to your repo.
-2. Create env vars on Netlify from `.env.example`.
-3. Ensure Supabase `profiles` table exists with `id,email,username,role` and RLS.
-4. Deploy.
+## Démarrer
+```bash
+npm install
+npm run dev
+```
+Build
+```bash
+npm run build
+npm run preview
+```
 
-## Scripts
-- `npm run dev`
-- `npm run build`
-- `npm run preview`
+## Déploiement Netlify
+- Connecter ce repo GitHub sur Netlify.
+- Build command: `npm run build`
+- Publish directory: `dist`
+- Node 18+ recommandé.
+
+## Remarques
+- Les pages sont des **exemples** de style/UX pour guider l'intégration dans CORE.
+- Ajoutez Supabase/Auth & données réelles dans un ZIP ultérieur, comme convenu.
