@@ -1,24 +1,19 @@
-# CORE v8.4 — Design System (Tailwind + React)
+# CORE v8.4 — JS/JSX + Tailwind
 
-Moodboard implémenté : palette, typos, tokens, focus ring AA, motions 160–220ms, composants de base (Button, Input, Select, Card, Badge/Status, KPI, Toast, DragHalo) et pages exemples (Accedi, Manager, Capo, Direzione, Catalogo).
+Pur JavaScript + JSX (pas de TypeScript, pas de CJS).  
+Assets dans `/public` (logos + ships).
 
 ## Démarrer
 ```bash
 npm install
 npm run dev
 ```
-Build
+
+## Build & Netlify
 ```bash
 npm run build
-npm run preview
 ```
+Publish: `dist`
 
-## Déploiement Netlify
-- Connecter ce repo GitHub sur Netlify.
-- Build command: `npm run build`
-- Publish directory: `dist`
-- Node 18+ recommandé.
-
-## Remarques
-- Les pages sont des **exemples** de style/UX pour guider l'intégration dans CORE.
-- Ajoutez Supabase/Auth & données réelles dans un ZIP ultérieur, comme convenu.
+### Astuce si Netlify gardait l'ancien `index.html`
+Vérifie que la balise script pointe bien vers `/src/main.jsx`.

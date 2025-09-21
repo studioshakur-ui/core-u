@@ -1,17 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  h1, .h1 { @apply font-heading text-3xl; }
-  h2, .h2 { @apply font-heading text-2xl; }
-  h3, .h3 { @apply font-heading text-xl; }
-  .text-data { @apply font-data; }
-}
-
-@layer components {
-  .card { @apply bg-white shadow-e1 rounded-2xl p-6; }
-  .btn { @apply inline-flex items-center justify-center rounded-premium font-medium transition duration-normal; }
-  .btn-primary { @apply btn bg-capo text-white hover:bg-capo-600 active:bg-capo-700; }
-  .btn-outline { @apply btn border border-neutral-25 bg-white hover:bg-neutral-25; }
-}
