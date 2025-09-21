@@ -1,0 +1,42 @@
+[
+  {
+    "categoria": "CAPO SQUADRA",
+    "descrizione": "CAPO SQUADRA",
+    "previsto": 0.2
+  },
+  {
+    "categoria": "STESURA",
+    "descrizione": "STESURA DIRETTIVA IMPLM",
+    "previsto": 350
+  },
+  {
+    "categoria": "MONTAGGIO",
+    "descrizione": "MONTAGGIO UTENZA (LAMPADA,PRESE,INT e CX)",
+    "previsto": 24
+  },
+  {
+    "categoria": "COLLEGAMENTO",
+    "descrizione": "COLLEGAMENTO (LAMPADA,PRESE,INT e CX)",
+    "previsto": 40
+  },
+  {
+    "categoria": "STESURA",
+    "descrizione": "STESURA CUCITO UTENZE (A Pz)",
+    "previsto": 20
+  },
+  {
+    "categoria": "CONNETTORI",
+    "descrizione": "MONTAGGIO CONNETTORI (A Pz)",
+    "previsto": 50
+  },
+  {
+    "categoria": "CABINE",
+    "descrizione": "PREPARAZIONE CONSEGNA LOCALI VARI",
+    "previsto": 120
+  },
+  {
+    "categoria": "VARIE",
+    "descrizione": "VARIE SDCN",
+    "previsto": 2
+  }
+]
