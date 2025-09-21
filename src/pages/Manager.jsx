@@ -1,8 +1,3 @@
-export default function ManagerPage() {
-  return (
-    <div className="bg-white rounded-2xl shadow-e1 p-4">
-      <div className="text-sm text-neutral-500">Manager</div>
-      <p className="mt-2 text-sm">Ricerca, paginazione, selezione multipla, DnD guidato, assegnazione massiva — placeholder in v8.2. (Virtualizzazione >300)</p>
-    </div>
-  );
-}
+import React from "react";
+import Header from "../components/Header";
+export default function Manager(){return (<div><Header/><main className="max-w-7xl mx-auto px-4 py-8"><h1 className="text-2xl font-semibold">Manager</h1><p className="text-core-muted">Area manager protetta.</p></main></div>);}

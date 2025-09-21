@@ -1,18 +1,27 @@
 import React from "react";
-export default function Header({right}){
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
+
+export default function Header(){
+  const { profile, role, signOut, session } = useAuthStore();
   return (
-    <header className="w-full header-blur sticky top-0 z-20 border-b border-core-border">
-      <div className="container py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img src="/assets/brand/logo-mark.svg" alt="CORE" className="w-8 h-8"/>
-          <div className="text-xl font-semibold tracking-wide">CORE</div>
-        </div>
-        <nav className="hidden md:flex items-center gap-6">
-          <a className="hover:underline" href="/capo">Capo</a>
-          <a className="hover:underline" href="/manager">Manager</a>
-          <a className="hover:underline" href="/direzione">Direzione</a>
+    <header className="bg-white border-b border-core-border">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
+        <img src="/assets/brand/logo-wordmark.svg" alt="CORE" className="h-6" />
+        <nav className="flex gap-3 text-sm">
+          <Link to="/" className="hover:underline">Home</Link>
+          <Link to="/capo" className="hover:underline">Capo</Link>
+          <Link to="/manager" className="hover:underline">Manager</Link>
+          <Link to="/direzione" className="hover:underline">Direzione</Link>
         </nav>
-        <div className="flex items-center gap-3">{right}</div>
+        <div className="ml-auto text-sm flex items-center gap-3">
+          {session ? (<>
+            <span className="text-core-muted">{profile?.email || "utente"} · {role || "n/a"}</span>
+            <button onClick={signOut} className="px-3 py-1 rounded-md bg-core-violet text-white">Logout</button>
+          </>) : (
+            <Link to="/login" className="px-3 py-1 rounded-md bg-core-violet text-white">Accedi</Link>
+          )}
+        </div>
       </div>
     </header>
   );

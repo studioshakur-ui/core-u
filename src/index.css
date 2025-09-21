@@ -2,4 +2,5 @@
 @tailwind components;
 @tailwind utilities;
 
-.drag-over { outline: 2px dashed #15a34a; outline-offset: 4px; }
+:root { color-scheme: light; }
+* { box-sizing: border-box; }

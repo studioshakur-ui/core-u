@@ -1,9 +1,15 @@
-export const ROLES = {
-  DIREZIONE: "direzione",
-  MANAGER: "manager",
-  CAPO: "capo",
-  USER: "user",
+// RBAC minimal
+const matrix = {
+  capo: ["/capo"],
+  manager: ["/manager", "/capo"],
+  direzione: ["/direzione", "/manager", "/capo"],
+  admin: ["/admin", "/direzione", "/manager", "/capo"],
 };
-export function readRole(session){
-  return session?.user?.app_metadata?.role || session?.user?.user_metadata?.role || null;
+
+export function hasAccess(role, requireRole) {
+  if (!requireRole) return true;
+  if (!role) return false;
+  if (role === "admin") return true;
+  const list = matrix[role] || [];
+  return list.some(p => p.includes(String(requireRole).replace("/", "")));
 }
