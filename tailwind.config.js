@@ -9,21 +9,20 @@ export default {
           border: "#e6e8eb",
           text: "#111111",
           muted: "#6b7280",
-          red: "#F80000",
-          redHover: "#D60000",
-          redPressed: "#B00000"
+          violet: "#6C4CF5",
+          violetHover: "#5636D9",
+          violetPressed: "#4329B3"
         }
       },
       boxShadow: {
-        subtle: "0 1px 2px rgba(0,0,0,0.04)"
+        e1: "0 8px 24px rgba(0,0,0,0.08)",
+        e0: "0 2px 8px rgba(0,0,0,0.06)"
       },
       borderRadius: {
-        md: "10px",
-        lg: "14px"
+        md: "12px",
+        lg: "16px"
       },
-      maxWidth: {
-        '7xl': '80rem'
-      }
+      maxWidth: { '7xl': '80rem' }
     },
   },
   plugins: [],

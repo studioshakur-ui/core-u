@@ -1,14 +1,17 @@
-# CORE v7 (Oracle-grade UI)
-- Light theme, red primary, 1px borders, editorial hero, enterprise navigation.
-- Features kept: i18n IT/FR/EN, Capo PDF export, Manager Import Wizard, Direzione dashboard.
-- No hardcoded data; import or input your own.
+# CORE v8 (Apple-style, violet identity)
+- Light theme, hero carousel clair, Manager with cloud->teams DnD, Capo daily, Direzione KPIs.
+- Powerful import parsing skeleton (XLSX colors -> Capo detection; CSV supported sans couleurs).
+- No hardcoded data; connect your Supabase env if needed.
 
 ## Quickstart
 ```
 npm i
 npm run dev
 ```
-
-Set env:
+Build:
+```
+npm run build
+```
+Env:
 - VITE_SUPABASE_URL
 - VITE_SUPABASE_ANON_KEY
