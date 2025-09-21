@@ -1,16 +1,18 @@
 import React from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils.js'
 
-export default function Button({variant='primary',size='md',className,...props}){
+export default function Button({ className, variant = 'primary', size = 'md', ...props }) {
   return (
     <button
       className={cn(
-        'rounded-premium font-medium transition',
-        variant==='primary' && 'bg-capo text-white px-4 py-2',
-        variant==='outline' && 'border border-neutral-25 bg-white hover:bg-neutral-25',
-        size==='sm'&&'text-sm px-2 py-1',
-        size==='md'&&'text-base px-3 py-2',
-        size==='lg'&&'text-lg px-4 py-3',
+        'btn focus-ring',
+        variant === 'primary' && 'bg-capo text-white hover:bg-capo-600 active:bg-capo-700',
+        variant === 'outline' && 'border border-neutral-25 bg-white hover:bg-neutral-25',
+        variant === 'ghost' && 'bg-transparent hover:bg-neutral-25',
+        size === 'sm' && 'h-8 px-3 text-sm',
+        size === 'md' && 'h-10 px-4 text-base',
+        size === 'lg' && 'h-12 px-6 text-lg',
+        'rounded-premium font-medium duration-normal',
         className
       )}
       {...props}
