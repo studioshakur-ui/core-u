@@ -1,30 +1,15 @@
-# CORE v8.5.1 — Complete (Base funzionale)
+# CORE v9.1
 
-**Data build:** 2025-09-21
+Version prête à pousser sur GitHub, intégrant :
 
-## Contenuto
-- Home WOW + login Supabase (email/password)
-- Router React Router (Home/Manager/Capo/Direzione)
-- Manager: cards squadre + KPI
-- Capo: Rapportino con **Catalogo** e **Export PDF A4**
-- Direzione: KPI + Grafico **S vs S-1** (Recharts)
-- Tailwind + Netlify SPA redirect
-- Seed catalogo `src/data/catalogo_apparato_motore.json`
+- Design System homogène (palette violet/gris, échelle typographique, radius/ombres)
+- Catalogo productif (recherche fuzzy, suggestions, favoris)
+- Dashboard Direzione premium (KPIs Δ vs S-1, panneau risques, export executive)
+- Export PDF métier (totaux, signatures, QR code)
+- Base SQL Supabase v9 (RLS Capo/Manager/Direzione)
 
-## Variabili ambiente (Netlify)
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-
-## Avvio locale
+## Démarrage
 ```bash
-npm i
+npm install
 npm run dev
 ```
-
-## Build
-```bash
-npm run build
-```
-
-## Note
-Questa versione include base charts e PDF Capo. Le viste avanzate (Delta giornaliero, Burn-up, Heatmap, Pareto, Executive PDF) possono essere aggiunte in un minor update.
