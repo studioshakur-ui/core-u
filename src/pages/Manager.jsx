@@ -60,15 +60,15 @@ export default function Manager(){
     a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url);
   };
 
-  return (<div onPaste={onPaste}>
+  return (<div onPaste={onPaste} className="bg-white text-core-text min-h-screen">
     <Header/>
-    <main className="p-6 grid gap-4">
-      <div className="card p-4">
+    <main className="container section grid gap-4">
+      <div className="bg-white border border-core-border rounded-lg p-6">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-semibold">{t.title}</h1>
           <div className="flex items-center gap-2">
             <input ref={fileRef} type="file" className="hidden" accept=".csv,.xlsx,.xls" onChange={e=>onFile(e.target.files?.[0])}/>
-            <button className="btn-primary" onClick={()=>fileRef.current?.click()}>{t.import}</button>
+            <button className="btn-outline" onClick={()=>fileRef.current?.click()}>{t.import}</button>
             <button className="btn-primary" onClick={dryRun}>Dry-run</button>
           </div>
         </div>
@@ -80,38 +80,36 @@ export default function Manager(){
             </label>
           ))}
         </div>
-        <div className="text-sm opacity-80 mb-2">{t.pasteHint}</div>
-        <div className="max-h-64 overflow-auto border border-white/10 rounded">
-          <table className="w-full text-sm">
-            <thead className="opacity-80">
-              <tr>{raw[0] && Object.keys(raw[0]).map(h=><th key={h} className="p-2 text-left">{h}</th>)}</tr>
-            </thead>
+        <div className="text-sm text-core-muted mb-2">{t.pasteHint}</div>
+        <div className="max-h-64 overflow-auto border border-core-border rounded-lg">
+          <table className="table">
+            <thead><tr>{raw[0] && Object.keys(raw[0]).map(h=><th key={h} className="text-left">{h}</th>)}</tr></thead>
             <tbody>
-              {raw.slice(0,20).map((r,i)=>(<tr key={i} className="border-t border-white/10">{Object.values(r).map((v,j)=><td key={j} className="p-2">{String(v)}</td>)}</tr>))}
+              {raw.slice(0,20).map((r,i)=>(<tr key={i}>{Object.values(r).map((v,j)=><td key={j}>{String(v)}</td>)}</tr>))}
             </tbody>
           </table>
         </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
-        <div className="card p-4">
+        <div className="kpi">
           <div className="font-semibold mb-2">{t.anomalies}</div>
           <div className="text-sm mb-2">Errors: <b>{errors.length}</b></div>
           <div className="flex gap-2">
-            <button className="btn-primary" onClick={()=>errors.length && downloadCsv("import-errors.csv", errors)} disabled={!errors.length}>{T[lang].common.export}</button>
+            <button className="btn-outline" onClick={()=>errors.length && downloadCsv("import-errors.csv", errors)} disabled={!errors.length}>{T[lang].common.export}</button>
           </div>
           <div className="mt-3 max-h-48 overflow-auto">
             <ul className="list-disc pl-5 text-sm">{errors.map((e,i)=><li key={i}>riga {e.row} • {e.field}: {e.msg}</li>)}</ul>
           </div>
         </div>
-        <div className="card p-4">
+        <div className="kpi">
           <div className="font-semibold mb-2">Valid</div>
           <div className="text-sm">Rows: <b>{valid.length}</b></div>
           <div className="text-sm">Ore totali: <b>{valid.reduce((a,b)=>a+(b.hours||0),0)}</b></div>
         </div>
-        <div className="card p-4">
+        <div className="kpi">
           <div className="font-semibold mb-2">{t.capacity}</div>
-          <div className="text-sm opacity-80">Setup capacità settimana paramétrable (placeholder).</div>
+          <div className="text-sm text-core-muted">Setup capacità settimana (placeholder).</div>
         </div>
       </div>
     </main>

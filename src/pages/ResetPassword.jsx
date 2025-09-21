@@ -1,1 +1,1 @@
-import React from 'react'; export default function ResetPassword(){ return (<div className='min-h-screen grid place-items-center p-6 lv-bg'><div className='card p-6'>Reset password — placeholder</div></div>); }
+import React from 'react'; export default function ResetPassword(){ return (<div className='min-h-screen bg-white grid place-items-center'><div className='bg-white border border-core-border rounded-lg p-6'>Reset password — placeholder</div></div>); }

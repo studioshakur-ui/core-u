@@ -14,22 +14,22 @@ export default function Direzione(){
     {label:"Δ S vs S-1", value:"—", delta:"—"},
     {label:"Coût estimé (€)", value:"—", delta:"—"},
   ];
-  return (<div>
+  return (<div className="bg-white text-core-text min-h-screen">
     <Header/>
-    <main className="p-6 grid gap-4">
+    <main className="container section grid gap-6">
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-semibold">{t.title}</h1>
-        <span className={`badge ${locked?'bg-green-500/20 border-green-500/40':'bg-yellow-500/20 border-yellow-500/40'}`}>{locked?t.locked:t.unlocked}</span>
+        <h1 className="text-2xl font-semibold">{t.title}</h1>
+        <span className={`badge ${locked?'':'bg-core-surface'}`}>{locked?t.locked:t.unlocked}</span>
       </div>
-      <div className="grid md:grid-cols-3 gap-4">{kpis.map((k,i)=>(<div key={i} className="kpi"><div className="text-sm opacity-80">{k.label}</div><div className="text-2xl font-semibold">{k.value}</div><div className="text-sm opacity-70">{k.delta}</div></div>))}</div>
+      <div className="grid md:grid-cols-3 gap-4">{kpis.map((k,i)=>(<div key={i} className="kpi"><div className="text-sm text-core-muted">{k.label}</div><div className="text-2xl font-semibold">{k.value}</div><div className="text-sm text-core-muted">{k.delta}</div></div>))}</div>
       <div className="grid md:grid-cols-2 gap-4">
-        <div className="card p-4">
+        <div className="kpi">
           <div className="font-semibold mb-2">{t.risks}</div>
-          <div className="text-sm opacity-80">Aucun risque (placeholder).</div>
+          <div className="text-sm text-core-muted">Aucun risque (placeholder).</div>
         </div>
-        <div className="card p-4">
+        <div className="kpi">
           <div className="font-semibold mb-2">{t.next}</div>
-          <ol className="list-decimal pl-5 text-sm opacity-90"><li>Configurer les seuils KPI.</li><li>Importer le planning.</li><li>Valider la semaine.</li></ol>
+          <ol className="list-decimal pl-5 text-sm text-core-muted"><li>Configurer les seuils KPI.</li><li>Importer le planning.</li><li>Valider la semaine.</li></ol>
         </div>
       </div>
       <div><button className="btn-primary">{t.executiveExport}</button></div>
