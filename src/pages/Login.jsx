@@ -1,28 +1,54 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase, initError } from "../lib/supabaseClient";
+import { useState } from "react";
+import { useAuthStore } from "../store/authStore.js";
 
-export default function Login(){
-  const n=useNavigate(); const [email,setEmail]=useState(""); const [password,setPassword]=useState("");
-  const [loading,setLoading]=useState(false); const [error,setError]=useState("");
-  const onSubmit=async(e)=>{ e.preventDefault(); if(initError){ setError("Supabase non configuré."); return;}
-    setLoading(true); try{ const { data, error } = await supabase.auth.signInWithPassword({ email, password }); if(error) throw error; n("/"); } catch(err){ setError(err?.message||"Erreur"); } finally{ setLoading(false);} };
-  return (<div className="min-h-screen bg-white">
-    <div className="container py-20 grid md:grid-cols-2 gap-10 items-center">
-      <div>
-        <h1 className="text-4xl font-bold mb-2">Connexion</h1>
-        <p className="text-core-muted mb-6">Accédez à CORE.</p>
-        <form onSubmit={onSubmit} className="space-y-3 max-w-md">
-          <label className="block"><span className="text-sm">Email</span><input type="email" className="input mt-1" value={email} onChange={e=>setEmail(e.target.value)} required/></label>
-          <label className="block"><span className="text-sm">Mot de passe</span><input type="password" className="input mt-1" value={password} onChange={e=>setPassword(e.target.value)} required/></label>
-          {error && <div className="text-red-600 text-sm">{error}</div>}
-          <button type="submit" disabled={loading} className="btn-primary w-full">{loading?"Connexion…":"Se connecter"}</button>
-        </form>
+export default function LoginPage() {
+  const { signIn, signOut, session, profile } = useAuthStore();
+  const [email, setEmail] = useState("manager@example.com");
+  const [password, setPassword] = useState("password");
+  const [role, setRole] = useState("manager");
+
+  const doLogin = async () => {
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+      // dev mode: just set role locally
+      await signIn(email, password);
+      // overwrite role in dev
+      useAuthStore.setState({ profile: { role, email } });
+      return;
+    }
+    await signIn(email, password);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white rounded-2xl shadow-e1 p-4 max-w-md">
+        <div className="text-sm text-neutral-500 mb-2">Login</div>
+        <div className="space-y-2">
+          <input className="w-full border rounded px-3 py-2" placeholder="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+          <input className="w-full border rounded px-3 py-2" placeholder="password" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
+          {!import.meta.env.VITE_SUPABASE_URL && (
+            <div className="flex items-center gap-2 text-sm">
+              <span>Ruolo (dev):</span>
+              <select className="border rounded px-2 py-1" value={role} onChange={(e)=>setRole(e.target.value)}>
+                <option value="capo">capo</option>
+                <option value="manager">manager</option>
+                <option value="direzione">direzione</option>
+              </select>
+            </div>
+          )}
+          <div className="flex gap-2">
+            <button className="px-3 py-2 rounded bg-black text-white" onClick={doLogin}>Login</button>
+            <button className="px-3 py-2 rounded bg-neutral-200" onClick={signOut}>Logout</button>
+          </div>
+          <div className="text-xs text-neutral-600">
+            {session ? <>Connesso come <b>{profile?.email}</b> (ruolo: <b>{profile?.role}</b>)</> : "Non connesso"}
+          </div>
+        </div>
       </div>
-      <div className="bg-core-surface border border-core-border rounded-lg p-6">
-        <div className="flex items-center gap-2"><img src="/assets/brand/logo-mark.svg" className="w-8 h-8"/><div className="text-xl font-semibold">CORE</div></div>
-        <p className="text-sm text-core-muted mt-2">Identité blanc/noir/violet. Design Apple-like.</p>
-      </div>
+      {!import.meta.env.VITE_SUPABASE_URL && (
+        <div className="text-xs text-neutral-600">
+          Modalità DEV: Supabase non configurato — login e ruoli simulati localmente.
+        </div>
+      )}
     </div>
-  </div>);
+  );
 }

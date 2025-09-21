@@ -2,28 +2,4 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
-
-.container { @apply max-w-7xl mx-auto px-6; }
-.section { @apply py-16; }
-.card { @apply bg-white border border-core-border rounded-lg shadow-e0; }
-.btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition; }
-.btn-primary { @apply btn bg-core-violet text-white hover:bg-core-violetHover active:bg-core-violetPressed focus:outline-none focus:ring-2 focus:ring-core-violet/40; }
-.btn-outline { @apply btn border border-core-violet text-core-violet hover:bg-core-violet/5 focus:outline-none focus:ring-2 focus:ring-core-violet/30; }
-.input { @apply w-full rounded-md border border-core-border bg-white p-2 focus:outline-none focus:ring-2 focus:ring-core-violet/30; }
-.badge { @apply inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs border border-core-border bg-white; }
-.kpi { @apply bg-white border border-core-border rounded-lg p-6; }
-.table { @apply w-full text-sm; } .table thead { @apply bg-core-surface; } .table th, .table td { @apply p-2 border-b border-core-border; }
-
-.header-blur { backdrop-filter: saturate(180%) blur(12px); background: rgba(255,255,255,0.8); }
-.search { @apply rounded-full border border-core-border bg-white px-4 py-2; }
-.segmented { @apply inline-flex rounded-full border border-core-border bg-white p-1; }
-.segmented > button { @apply px-3 py-1 rounded-full; }
-.segmented > button[aria-pressed="true"] { @apply bg-core-surface; }
-
-.hero-dots button { @apply h-2 w-2 rounded-full bg-black/30; } .hero-dots button[aria-current="true"] { @apply w-6 bg-black; }
-
-.capo { @apply bg-white border border-core-border rounded-lg shadow-e1 p-4; }
-.operaio { @apply bg-white border border-core-border rounded-md px-3 py-2 shadow-e0; }
-.operaio:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-.drag-over { outline: 2px dashed rgba(108,76,245,0.6); outline-offset: 6px; border-radius: 12px; }
+.drag-over { outline: 2px dashed #15a34a; outline-offset: 4px; }

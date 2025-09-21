@@ -1,29 +1,21 @@
+/** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
         core: {
-          bg: "#ffffff",
-          surface: "#f5f5f7",
-          border: "#e6e8eb",
-          text: "#111111",
-          muted: "#6b7280",
-          violet: "#6C4CF5",
-          violetHover: "#5636D9",
-          violetPressed: "#4329B3"
+          bg: "#f6f7f9",
+          green: "#15a34a"
         }
       },
+      borderRadius: { '2xl': '1rem' },
       boxShadow: {
-        e1: "0 8px 24px rgba(0,0,0,0.08)",
-        e0: "0 2px 8px rgba(0,0,0,0.06)"
-      },
-      borderRadius: {
-        md: "12px",
-        lg: "16px"
-      },
-      maxWidth: { '7xl': '80rem' }
-    },
+        soft: "0 6px 24px rgba(0,0,0,.06)",
+        e1: "0 2px 10px rgba(0,0,0,.06)",
+        e2: "0 6px 24px rgba(0,0,0,.10)"
+      }
+    }
   },
-  plugins: [],
+  plugins: []
 };

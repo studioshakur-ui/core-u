@@ -1,7 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-export const env = { url: import.meta.env?.VITE_SUPABASE_URL || "", key: import.meta.env?.VITE_SUPABASE_ANON_KEY || "" };
-export let supabase = null; export let initError = null;
-try {
-  if (!env.url || !env.key) { initError = "Supabase config missing"; console.error("[CORE] " + initError); }
-  else { supabase = createClient(env.url, env.key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }); }
-} catch (e) { initError = e?.message || String(e); console.error("[CORE] Supabase init exception →", e); }
+
+const url = import.meta.env.VITE_SUPABASE_URL;
+const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = (url && key) ? createClient(url, key) : null;

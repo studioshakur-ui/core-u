@@ -1,14 +1,14 @@
 {
-  "name": "CORE",
+  "name": "CORE v8.2",
   "short_name": "CORE",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0b0b0c",
-  "theme_color": "#7c3aed",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
   "icons": [
     {
       "src": "/favicon.svg",
-      "sizes": "any",
+      "sizes": "64x64",
       "type": "image/svg+xml"
     }
   ]
