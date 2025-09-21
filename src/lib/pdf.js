@@ -103,13 +103,14 @@ export async function createReportinoPDF({header, rows, attachments=[], hash=''}
   // QR code with hash
   const qrText = hash || JSON.stringify({ commessa: header?.commessa, data: header?.data })
   const qrDataUrl = await QRCode.toDataURL(qrText, { margin: 0, width: 128 })
-  
-  const base64 = qrDataUrl.split(',')[1]
-  const binary = atob(base64)
-  const len = binary.length
-  const qrImageBytes = new Uint8Array(len)
-  for (let i=0;i<len;i++){ qrImageBytes[i] = binary.charCodeAt(i) }
-
+  const qrImageBytes = (function(){
+  const base64 = qrDataUrl.split(',')[1];
+  const binary = atob(base64);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for (let i=0;i<len;i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+})()
   const qrImage = await pdfDoc.embedPng(qrImageBytes)
   const qrSize = mm(24)
   page.drawImage(qrImage, { x: width - margin - qrSize, y: mm(10), width: qrSize, height: qrSize })
