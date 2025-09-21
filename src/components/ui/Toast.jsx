@@ -1,6 +1,6 @@
 import React from 'react'
 import * as ToastPrimitives from '@radix-ui/react-toast'
-import { cn } from '@/lib/utils.js'
+import { cn } from '../../lib/utils.js'
 
 export function ToastProvider({ children }) {
   return (

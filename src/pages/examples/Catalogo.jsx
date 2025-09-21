@@ -1,7 +1,7 @@
 import React from 'react'
-import PageHeader from '@/components/layout/PageHeader.jsx'
-import { Card } from '@/components/ui/Card.jsx'
-import { Badge } from '@/components/ui/Badge.jsx'
+import PageHeader from '../../components/layout/PageHeader.jsx'
+import { Card } from '../../components/ui/Card.jsx'
+import { Badge } from '../../components/ui/Badge.jsx'
 
 export default function Catalogo() {
   return (

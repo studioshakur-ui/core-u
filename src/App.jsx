@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import Home from '@/pages/examples/Home.jsx'
-import Accedi from '@/pages/examples/Accedi.jsx'
-import Manager from '@/pages/examples/Manager.jsx'
-import Capo from '@/pages/examples/Capo.jsx'
-import Direzione from '@/pages/examples/Direzione.jsx'
-import Catalogo from '@/pages/examples/Catalogo.jsx'
-import Button from '@/components/ui/Button.jsx'
+import Home from '../pages/examples/Home.jsx'
+import Accedi from '../pages/examples/Accedi.jsx'
+import Manager from '../pages/examples/Manager.jsx'
+import Capo from '../pages/examples/Capo.jsx'
+import Direzione from '../pages/examples/Direzione.jsx'
+import Catalogo from '../pages/examples/Catalogo.jsx'
+import Button from '../components/ui/Button.jsx'
 
 const screens = { Home, Accedi, Manager, Capo, Direzione, Catalogo }
 

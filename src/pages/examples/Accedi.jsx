@@ -1,7 +1,7 @@
 import React from 'react'
-import Button from '@/components/ui/Button.jsx'
-import { Input } from '@/components/ui/Input.jsx'
-import { Select } from '@/components/ui/Select.jsx'
+import Button from '../../components/ui/Button.jsx'
+import { Input } from '../../components/ui/Input.jsx'
+import { Select } from '../../components/ui/Select.jsx'
 import { IconBrandGithub, IconBrandGoogle, IconBrandApple } from '@tabler/icons-react'
 
 export default function Accedi() {

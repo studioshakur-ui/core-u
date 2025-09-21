@@ -1,7 +1,7 @@
 import React from 'react'
-import PageHeader from '@/components/layout/PageHeader.jsx'
-import Button from '@/components/ui/Button.jsx'
-import { Card } from '@/components/ui/Card.jsx'
+import PageHeader from '../../components/layout/PageHeader.jsx'
+import Button from '../../components/ui/Button.jsx'
+import { Card } from '../../components/ui/Card.jsx'
 
 export default function Manager() {
   return (

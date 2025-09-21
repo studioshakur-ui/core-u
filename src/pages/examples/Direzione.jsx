@@ -1,7 +1,7 @@
 import React from 'react'
-import PageHeader from '@/components/layout/PageHeader.jsx'
-import { KPI } from '@/components/ui/KPI.jsx'
-import { Card } from '@/components/ui/Card.jsx'
+import PageHeader from '../../components/layout/PageHeader.jsx'
+import { KPI } from '../../components/ui/KPI.jsx'
+import { Card } from '../../components/ui/Card.jsx'
 
 export default function Direzione() {
   return (

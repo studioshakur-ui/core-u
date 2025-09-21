@@ -1,7 +1,7 @@
 import React from 'react'
-import HeroSlider from '@/components/ui/HeroSlider.jsx'
-import { Card } from '@/components/ui/Card.jsx'
-import Button from '@/components/ui/Button.jsx'
+import HeroSlider from '../../components/ui/HeroSlider.jsx'
+import { Card } from '../../components/ui/Card.jsx'
+import Button from '../../components/ui/Button.jsx'
 
 export default function Home() {
   return (
