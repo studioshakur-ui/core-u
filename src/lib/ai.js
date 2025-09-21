@@ -9,8 +9,10 @@ const schemaNormalize = z.object({
   notes: z.array(z.string()).optional().default([])
 })
 
+const AI_ENABLED = (import.meta.env.VITE_AI_ENABLED === 'true' || process.env.VITE_AI_ENABLED === 'true')
 let _client
 function client(){
+  if(!AI_ENABLED) throw new Error('AI disabled');
   if(!_client){
     _client = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API_KEY || process.env.OPENAI_API_KEY })
   }

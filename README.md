@@ -13,3 +13,9 @@ Version prête à pousser sur GitHub, intégrant :
 npm install
 npm run dev
 ```
+
+## CI/CD
+- GitHub Actions → Netlify (`.github/workflows/deploy.yml`)
+
+## Export PDF
+- `src/lib/pdf.js` + `<ExportPDFButton />`
