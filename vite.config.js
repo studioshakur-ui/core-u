@@ -1,10 +1,13 @@
-// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import legacy from '@vitejs/plugin-legacy'
 
 export default defineConfig({
-  plugins: [react()],
-  build: {
-    target: 'es2019' // suffisant pour Netlify/Chrome/Edge récents
-  }
+  plugins: [
+    react(),
+    legacy({
+      targets: ['defaults', 'not IE 11'], // adapte si besoin
+      modernPolyfills: true
+    })
+  ]
 })
