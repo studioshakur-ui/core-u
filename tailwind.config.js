@@ -1,22 +1,12 @@
+// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html','./src/**/*.{js,jsx}'],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
   theme: {
-    \1 brand: { violet: '#6C5CE7', dark: '#121212', light: '#F5F5F5', white: '#FFFFFF' },
-        core: {
-          green: '#14B85A', /* verde Capo signature (non Spotify) */
-          petrol: '#005F73',
-          orange: '#FF7849',
-          slate: '#0F172A'
-        }
-      },
-      boxShadow: {
-        card: '0 10px 30px rgba(0,0,0,.08)'
-      },
-      fontFamily: {
-        plex: ['"IBM Plex Sans"', 'Inter', 'system-ui', 'sans-serif']
-      }
-    },
+    extend: {},
   },
   plugins: [],
 }
