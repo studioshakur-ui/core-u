@@ -1,0 +1,12 @@
+import { supabase } from '@/lib/supabase'
+export type Team = { id: string, name: string, org_id?: string }
+export type Person = { id: string, full_name?: string, role?: string, is_active?: boolean }
+export type TeamPerson = { team_id: string, person_id: string, role?: string }
+export async function fetchTeams(): Promise<Team[]> { const { data, error } = await supabase.from('teams').select('id,name,org_id').order('name'); if (error) throw error; return data as any }
+export async function fetchPeople(): Promise<Person[]> { const { data, error } = await supabase.from('people').select('id,full_name,role,is_active').order('full_name'); if (error) throw error; return (data||[]) as any }
+export async function fetchTeamPeople(): Promise<TeamPerson[]> { const { data, error } = await supabase.from('team_people').select('team_id,person_id,role'); if (error) throw error; return (data||[]) as any }
+export async function createTeam(name: string) { const { data:rpc, error:rpcErr } = await supabase.rpc('fn_team_create', { p_name: name }); if (!rpcErr && rpc) return rpc as string; const id = crypto.randomUUID(); const { error } = await supabase.from('teams').insert({ id, name }); if (error) throw error; return id }
+export async function createPerson(full_name: string, role: 'capo'|'operaio') { const { data:rpc, error:rpcErr } = await supabase.rpc('fn_person_upsert', { p_full_name: full_name, p_role: role }); if (!rpcErr && rpc) return rpc as string; const { data, error } = await supabase.from('people').insert({ full_name, role }).select('id').single(); if (error) throw error; return data.id as string }
+export async function addToTeam(team_id: string, person_id: string, role: 'capo'|'operaio'='operaio') { const { error:rpcErr } = await supabase.rpc('fn_team_add_person', { p_team_id: team_id, p_person_id: person_id, p_role: role }); if (!rpcErr) return; const { error } = await supabase.from('team_people').upsert({ team_id, person_id, role }); if (error) throw error }
+export async function removeFromTeam(team_id: string, person_id: string) { const { error } = await supabase.from('team_people').delete().eq('team_id', team_id).eq('person_id', person_id); if (error) throw error }
+export async function setRole(person_id: string, new_role: 'capo'|'operaio') { const { error:rpcErr } = await supabase.rpc('fn_person_set_role', { p_person_id: person_id, p_new_role: new_role }); if (!rpcErr) return; const { error } = await supabase.from('people').update({ role: new_role }).eq('id', person_id); if (error) throw error }

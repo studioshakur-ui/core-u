@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "./theme.css";
+:focus-visible{ outline: none; box-shadow: 0 0 0 3px var(--ring); border-radius: 12px; }
+.card{ background:var(--card); border-radius: 20px; box-shadow: var(--shadow, 0 6px 24px rgba(0,0,0,.08)); }
+.btn{ border-radius: 9999px; padding: .6rem 1rem; font-weight: 600; }
+.btn-primary{ background: var(--primary); color: var(--on-primary); }
+.btn-ghost{ background: transparent; color: var(--text); }
+.input{ background: var(--muted); color: var(--text); border-radius: 12px; padding: .65rem .8rem; }
+.badge{ background: rgba(124,58,237,.15); color: #c6b2ff; border-radius: 9999px; padding: .2rem .6rem; font-size: .75rem; }
+.section-title{ font-size: .85rem; color: var(--subtle); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem; }
