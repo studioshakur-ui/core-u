@@ -1,6 +1,5 @@
 import React from "react";
-
-export default function KPI({ label, value, delta, hint }){
+export default function KPI({ label, value, delta, hint }) {
   const sign = (delta ?? 0) > 0 ? "+" : "";
   const color = (delta ?? 0) >= 0 ? "text-green-600" : "text-red-600";
   return (
