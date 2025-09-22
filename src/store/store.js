@@ -137,7 +137,9 @@ export const useCapoStore = create(
           name: a.name,
           type: a.type
         }))
-        await downloadReportinoPDF({ header, rows, attachments, hash: '' })
+       await downloadReportinoPDF({ header, rows, attachments, hash: '' })
+alert('PDF pronto (usa “Enregistrer au format PDF”)')
+
       }
     }),
     {
