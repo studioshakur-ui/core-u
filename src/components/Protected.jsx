@@ -1,12 +1,20 @@
-import React from "react";
-import { useSession } from "../hooks/useSession";
-import { readRole } from "../auth/roles";
+import React, { useEffect, useState } from 'react'
+import { Navigate } from 'react-router-dom'
+import { createClient } from '@supabase/supabase-js'
 
-export default function Protected({ allow = [], children }){
-  const { session, loading } = useSession();
-  if(loading) return <div className="container-core py-16">Caricamento…</div>;
-  const role = readRole(session);
-  if(!session) return <div className="container-core py-16">Effettua il login.</div>;
-  if(allow.length && !allow.includes(role)) return <div className="container-core py-16">Accesso negato.</div>;
-  return children;
+const url = import.meta.env.VITE_SUPABASE_URL
+const key = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabase = (url && key) ? createClient(url, key) : null
+
+export default function Protected({ children }){
+  const [auth, setAuth] = useState(supabase ? undefined : true) // si pas de supabase -> open
+  useEffect(()=>{
+    if(!supabase) return
+    supabase.auth.getSession().then(({ data })=>{
+      setAuth(!!data?.session)
+    })
+  },[])
+  if(auth === undefined) return <div className="p-6">...</div>
+  if(!auth) return <Navigate to="/login" replace />
+  return children
 }
