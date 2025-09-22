@@ -1,14 +1,1 @@
-import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase.js'
-export default function ProtectedRoute({ children, allowed=[] }){
-  const [state,setState]=useState({loading:true,allowed:false})
-  useEffect(()=>{ let m=true;(async()=>{
-    const { data:{user} }=await supabase.auth.getUser(); if(!user){ m&&setState({loading:false,allowed:false});return }
-    const { data:prof }=await supabase.from('profiles').select('role').eq('id',user.id).maybeSingle()
-    const ok=allowed.includes(prof?.role); m&&setState({loading:false,allowed:ok})
-  })(); return()=>{m=false} },[allowed])
-  if(state.loading) return <div className="p-8 text-sm opacity-70">Chargement…</div>
-  if(!state.allowed) return <Navigate to="/" replace/>
-  return children
-}
+import { useEffect,useState } from 'react'; import { Navigate } from 'react-router-dom'; import { supabase } from '../lib/supabase.js'; export default function ProtectedRoute({children,allowed=[]}){ const [loading,setLoading]=useState(true); const [ok,setOk]=useState(false); useEffect(()=>{ let m=true;(async()=>{ const { data:{ user } }=await supabase.auth.getUser(); if(!user){ m&&setOk(false); m&&setLoading(false); return } const { data: mem }=await supabase.from('memberships').select('role').limit(1).maybeSingle(); const role=mem?.role||null; m&&setOk(role?allowed.includes(role):false); m&&setLoading(false) })(); const { data: sub }=supabase.auth.onAuthStateChange(()=>{ setLoading(true); setTimeout(()=>setLoading(false),100) }); return ()=>{ sub?.subscription?.unsubscribe?.(); m=false } },[allowed]); if(loading) return <div className='p-8 text-sm opacity-70'>Caricamento…</div>; if(!ok) return <Navigate to='/' replace/>; return children }

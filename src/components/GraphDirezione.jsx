@@ -1,8 +1,1 @@
-import { Line } from 'react-chartjs-2'
-import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend } from 'chart.js'
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend)
-export default function GraphDirezione({ labels=[], s=[], s1=[] }){
-  const data={ labels, datasets:[ {label:'S',data:s,borderWidth:2,tension:.3}, {label:'S-1',data:s1,borderWidth:2,tension:.3} ] }
-  const options={ responsive:true, plugins:{ legend:{ position:'bottom' } } }
-  return <Line data={data} options={options}/>
-}
+import { Line } from 'react-chartjs-2'; import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend, Filler } from 'chart.js'; ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend, Filler); export default function GraphDirezione({labels=[],s=[],s1=[]}){ const data={labels,datasets:[{label:'S',data:s,borderWidth:2,tension:.35,borderColor:'#8B85FF',backgroundColor:'rgba(139,133,255,0.15)',pointRadius:3,pointHoverRadius:5,fill:true},{label:'S-1',data:s1,borderWidth:2,tension:.35,borderColor:'#7dd3fc',backgroundColor:'rgba(125,211,252,0.10)',pointRadius:3,pointHoverRadius:5,fill:true}]}; const options={responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#E5E7EB'}},tooltip:{mode:'index',intersect:false}},scales:{x:{ticks:{color:'#A3A3A3'},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#A3A3A3'},grid:{color:'rgba(255,255,255,0.06)'}}}}; return <Line data={data} options={options}/> }

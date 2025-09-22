@@ -1,0 +1,1 @@
+export default async (req,res)=>{try{const body=await new Promise(r=>{let d='';req.on('data',c=>d+=c);req.on('end',()=>r(JSON.parse(d||'{}')))}); const out={suggestion:'Controllo cablaggio quadro motore'}; res.setHeader('Content-Type','application/json'); res.end(JSON.stringify(out))}catch(e){res.statusCode=500; res.end(JSON.stringify({error:'errore suggerimenti'}))}}
