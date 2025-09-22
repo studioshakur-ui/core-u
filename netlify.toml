@@ -1,4 +1,6 @@
+# netlify.toml (à la racine du repo)
 [build]
+  base = "core-u"        # <-- mets le dossier qui contient package.json
   command = "npm run build"
   publish = "dist"
   functions = "netlify/functions"
