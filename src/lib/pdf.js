@@ -1,4 +1,7 @@
-// Export PDF sans dépendance (print-to-PDF via le navigateur)
+// src/lib/pdf.js
+// Export PDF simple : génère une page HTML imprimable.
+// L’utilisateur peut ensuite "Enregistrer au format PDF" via le navigateur.
+
 export async function downloadReportinoPDF({ header, rows, attachments = [], hash = '' }) {
   const win = window.open('', '_blank')
   if (!win) return
@@ -26,23 +29,33 @@ export async function downloadReportinoPDF({ header, rows, attachments = [], has
     </div>
   `
 
-  const rowsHtml = rows && rows.length
-    ? rows.map(r => `
+  const rowsHtml =
+    rows && rows.length
+      ? rows
+          .map(
+            (r) => `
         <tr>
-          <td>${escapeHtml(r.attivita||'')}</td>
-          <td>${Array.isArray(r.operatori)? r.operatori.join(', ') : ''}</td>
-          <td>${r.zona||''}</td>
+          <td>${escapeHtml(r.attivita || '')}</td>
+          <td>${Array.isArray(r.operatori) ? r.operatori.join(', ') : ''}</td>
+          <td>${r.zona || ''}</td>
           <td style="text-align:right">${r.previsto ?? ''}</td>
           <td style="text-align:right">${r.prodotto ?? ''}</td>
           <td style="text-align:right">${r.ore_totali ?? ''}</td>
-        </tr>`).join('')
-    : `<tr><td colspan="6" style="text-align:center;color:#64748b">Aucune ligne</td></tr>`
+        </tr>`
+          )
+          .join('')
+      : `<tr><td colspan="6" style="text-align:center;color:#64748b">Aucune ligne</td></tr>`
 
   const attHtml = attachments.length
-    ? `<div class="attachments"><b>Allegati (${attachments.length})</b><br>${attachments.map(a=>`- ${a.name} (${a.type||'file'})`).join('<br>')}</div>`
+    ? `<div class="attachments"><b>Allegati (${attachments.length})</b><br>${attachments
+        .map((a) => `- ${a.name} (${a.type || 'file'})`)
+        .join('<br>')}</div>`
     : ''
 
-  const totalOre = (rows||[]).reduce((a, r) => a + (Number(r.ore_totali)||0), 0)
+  const totalOre = (rows || []).reduce(
+    (a, r) => a + (Number(r.ore_totali) || 0),
+    0
+  )
 
   win.document.write(`
     <!doctype html><html><head><meta charset="utf-8">${style}</head>
@@ -68,11 +81,11 @@ export async function downloadReportinoPDF({ header, rows, attachments = [], has
   win.document.close()
 }
 
-function escapeHtml(s='') {
+function escapeHtml(s = '') {
   return String(s)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'",'&#039;')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
 }
