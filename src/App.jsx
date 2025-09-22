@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, Link } from 'react-router-dom'
 import Capo from './pages/Capo'
 import Home from './pages/Home'
 import Login from './pages/Login'
-import Navbar from './components/Navbar'
+import Navbar from './components/Navbar.jsx'
 import Protected from './components/Protected'
 
 export default function App(){
