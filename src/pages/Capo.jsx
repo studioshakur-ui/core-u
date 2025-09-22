@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
-import { useCapoStore } from '../store/store'          // peut rester en .ts, Vite transpile
-import { runOCR } from '../lib/ocr'
-import { suggest } from '../lib/catalog'
+import { useCapoStore } from '../store/store.js'          // peut rester en .ts, Vite transpile
+import { runOCR } from '../lib/ocr.js'
+import { suggest } from '../lib/catalog.js'
 
 export default function Capo() {
   const {
