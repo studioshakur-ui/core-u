@@ -1,10 +1,13 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import App from './App'
-import './index.css' // 👈 important
+import App from './App.jsx'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+// 👇 très important pour Tailwind
+import './index.css'
+
+const rootEl = document.getElementById('root')
+createRoot(rootEl).render(
   <React.StrictMode>
     <BrowserRouter>
       <App />
