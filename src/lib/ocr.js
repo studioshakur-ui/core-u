@@ -1,10 +1,17 @@
-// src/lib/ocr.js
-import Tesseract from 'tesseract.js'
-
+// Stub OCR : renvoie une chaîne vide ou un texte d'exemple si tu veux tester
 export async function runOCR(file) {
-  // images conseillées; pour pdf, extraire la 1ère page en image côté navigateur si besoin
-  const { data: { text } } = await Tesseract.recognize(file, 'eng+ita', {
-    tessedit_pageseg_mode: 6
-  })
-  return (text || '').replace(/\s+\n/g, '\n').trim()
+  try {
+    if (!file) return ''
+    // Si un PDF texte est déposé, on essaie de lire comme texte brut (fallback simple)
+    if (file.type === 'text/plain') {
+      return await file.text()
+    }
+    // Pour le moment on retourne vide (tu pourras brancher Tesseract.js ici)
+    // Exemple de retour de test :
+    // return 'Saldatura supporto lampada PT 3FZ 2 ore 6 operatori'
+    return ''
+  } catch (e) {
+    console.error('[OCR]', e)
+    return ''
+  }
 }
