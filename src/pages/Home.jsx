@@ -1,16 +1,32 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 
 export default function Home(){
   return (
-    <main className="max-w-6xl mx-auto p-6">
-      <div className="bg-white rounded-2xl shadow-sm border p-8">
-        <h1 className="text-2xl font-bold">CORE v9.1</h1>
-        <p className="text-slate-600 mt-2">Accès direct Capo. Aucun lien ou mention de manager/direzione.</p>
-        <div className="mt-4 flex gap-3">
-          <Link to="/capo" className="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500">Entrer (Capo)</Link>
-          <Link to="/login" className="px-4 py-2 rounded-xl border">Login</Link>
-        </div>
+    <main className="max-w-5xl mx-auto p-6">
+      <h1 className="text-2xl font-semibold mb-2">CORE</h1>
+      <p className="text-slate-600 mb-6">
+        Outil de rapport journalier. Connectez-vous pour accéder à votre interface.
+      </p>
+
+      <div className="flex gap-3">
+        <Link to="/login" className="px-4 py-2 rounded bg-slate-900 text-white hover:bg-slate-800">
+          Login
+        </Link>
+        <Link to="/capo" className="px-4 py-2 rounded border">
+          Aller à Capo (si déjà connecté)
+        </Link>
+      </div>
+
+      <div className="mt-10 text-sm text-slate-500">
+        { /* bouton debug logout utile sur le terrain */ }
+        <button
+          className="underline"
+          onClick={() => supabase.auth.signOut()}
+        >
+          Se déconnecter
+        </button>
       </div>
     </main>
   )
