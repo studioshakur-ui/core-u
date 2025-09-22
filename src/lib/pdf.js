@@ -1,130 +1,78 @@
-// src/lib/pdf.js
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import QRCode from 'qrcode'
+// Export PDF sans dépendance (print-to-PDF via le navigateur)
+export async function downloadReportinoPDF({ header, rows, attachments = [], hash = '' }) {
+  const win = window.open('', '_blank')
+  if (!win) return
 
-function mm(v){ return v * 2.83465 } // mm -> pt
+  const style = `
+    <style>
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; margin: 24px; color:#0f172a; }
+      h1 { font-size: 20px; margin:0 0 8px; }
+      .meta { font-size:12px; color:#475569; margin-bottom:16px }
+      table { width:100%; border-collapse: collapse; font-size:12px; }
+      th, td { border:1px solid #e2e8f0; padding:8px; text-align:left; }
+      th { background:#f8fafc; }
+      .attachments { font-size:12px; margin-top:12px; }
+      .footer { margin-top:24px; font-size:11px; color:#64748b }
+    </style>
+  `
 
-function dataUrlToBytes(dataUrl){
-  // Compatible navigateur (pas de Buffer côté Node)
-  const base64 = dataUrl.split(',')[1]
-  const binary = atob(base64)
-  const len = binary.length
-  const bytes = new Uint8Array(len)
-  for (let i=0;i<len;i++) bytes[i] = binary.charCodeAt(i)
-  return bytes
+  const headerHtml = `
+    <h1>${header?.titolo || 'Rapportino Giornaliero'}</h1>
+    <div class="meta">
+      Commessa: <b>${header?.commessa || '-'}</b> ·
+      Data: <b>${header?.data || '-'}</b> ·
+      Capo: <b>${header?.capo || '-'}</b> ·
+      Org: <b>${header?.org || '-'}</b>
+    </div>
+  `
+
+  const rowsHtml = rows && rows.length
+    ? rows.map(r => `
+        <tr>
+          <td>${escapeHtml(r.attivita||'')}</td>
+          <td>${Array.isArray(r.operatori)? r.operatori.join(', ') : ''}</td>
+          <td>${r.zona||''}</td>
+          <td style="text-align:right">${r.previsto ?? ''}</td>
+          <td style="text-align:right">${r.prodotto ?? ''}</td>
+          <td style="text-align:right">${r.ore_totali ?? ''}</td>
+        </tr>`).join('')
+    : `<tr><td colspan="6" style="text-align:center;color:#64748b">Aucune ligne</td></tr>`
+
+  const attHtml = attachments.length
+    ? `<div class="attachments"><b>Allegati (${attachments.length})</b><br>${attachments.map(a=>`- ${a.name} (${a.type||'file'})`).join('<br>')}</div>`
+    : ''
+
+  const totalOre = (rows||[]).reduce((a, r) => a + (Number(r.ore_totali)||0), 0)
+
+  win.document.write(`
+    <!doctype html><html><head><meta charset="utf-8">${style}</head>
+    <body>
+      ${headerHtml}
+      <table>
+        <thead><tr>
+          <th>Attività</th><th>Operatori</th><th>Zona</th><th>Prev</th><th>Prod</th><th>Ore</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+        <tfoot>
+          <tr>
+            <td colspan="5" style="text-align:right"><b>Totale ore</b></td>
+            <td style="text-align:right"><b>${totalOre.toFixed(2)}</b></td>
+          </tr>
+        </tfoot>
+      </table>
+      ${attHtml}
+      <div class="footer">Hash: ${hash || '-'} · Generato da CORE</div>
+      <script>window.onload = () => setTimeout(()=>window.print(), 300)</script>
+    </body></html>
+  `)
+  win.document.close()
 }
 
-export async function createReportinoPDF({header, rows, attachments=[], hash=''}) {
-  // header = { logoDataUrl?, titolo, commessa, data, capo, org }
-  const pdfDoc = await PDFDocument.create()
-  const page = pdfDoc.addPage([mm(210), mm(297)]) // A4 portrait
-  const { width, height } = page.getSize()
-
-  const margin = mm(15)
-  const contentW = width - margin*2
-  const startY = height - margin
-
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
-  const fontB = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
-
-  // Header band
-  let y = startY
-  page.drawRectangle({ x: margin, y: y - mm(18), width: contentW, height: mm(18), color: rgb(0.95,0.95,0.97) })
-  page.drawText(header?.titolo || 'RAPPORTINO DI GIORNATA', { x: margin+mm(6), y: y - mm(13), size: 12, font: fontB })
-  y -= mm(24)
-
-  // Meta
-  const meta = [
-    ['Commessa', header?.commessa || '-'],
-    ['Data', header?.data || '-'],
-    ['Capo', header?.capo || '-'],
-    ['Organizzazione', header?.org || '-']
-  ]
-  meta.forEach((kv, i)=>{
-    const rowY = y - i*mm(8)
-    page.drawText(kv[0]+':', { x: margin, y: rowY, size: 10, font: fontB })
-    page.drawText(String(kv[1]), { x: margin+mm(35), y: rowY, size: 10, font })
-  })
-  y -= mm(8)*meta.length + mm(6)
-
-  // Table header
-  const cols = [
-    { key:'attivita',   label:'Attività', w: 0.40 },
-    { key:'operatori',  label:'Oper.',    w: 0.18 },
-    { key:'zona',       label:'Zona',     w: 0.12 },
-    { key:'previsto',   label:'Prev',     w: 0.10 },
-    { key:'prodotto',   label:'Prod',     w: 0.10 },
-    { key:'ore_totali', label:'Ore',      w: 0.10 },
-  ]
-  page.drawRectangle({ x: margin, y: y - mm(8), width: contentW, height: mm(8), color: rgb(0.9,0.9,0.95) })
-  let x = margin
-  cols.forEach(c => {
-    const w = contentW * c.w
-    page.drawText(c.label, { x, y: y - mm(6), size: 9, font: fontB })
-    x += w + mm(2)
-  })
-  y -= mm(12)
-
-  // Table rows
-  const lineH = mm(7)
-  rows.forEach(r => {
-    let cx = margin
-    const values = [
-      String(r.attivita ?? ''),
-      Array.isArray(r.operatori) ? r.operatori.join(', ') : (r.operatore ?? ''),
-      String(r.zona ?? ''),
-      r.previsto != null ? String(r.previsto) : '',
-      r.prodotto != null ? String(r.prodotto) : '',
-      r.ore_totali != null ? String(r.ore_totali) : '',
-    ]
-    values.forEach((val, i) => {
-      const w = contentW * cols[i].w
-      page.drawText(String(val).slice(0,42), { x: cx, y: y - mm(5), size: 9, font })
-      cx += w + mm(2)
-    })
-    y -= lineH
-  })
-
-  // Totals
-  const totalOre = rows.reduce((a,b)=> a + (Number(b.ore_totali)||0), 0)
-  page.drawText(`Totale ore: ${totalOre.toFixed(2)}`, { x: margin, y: y - mm(10), size: 10, font: fontB })
-  y -= mm(16)
-
-  // Attachments (list)
-  page.drawText('Allegati (elenco):', { x: margin, y: y - mm(6), size: 10, font: fontB })
-  y -= mm(10)
-  attachments.slice(0,8).forEach((a, idx) => {
-    page.drawText(`• ${a.name || a.filename || 'file'} (${a.type || a.mime || ''})`, { x: margin, y: y - idx*mm(6), size: 9, font })
-  })
-
-  // Signatures
-  const sigY = mm(35)
-  page.drawLine({ start: {x: margin, y: sigY}, end:{x: margin+mm(60), y: sigY}, thickness: 1, color: rgb(0,0,0)})
-  page.drawText('Firma Capo', { x: margin, y: sigY - mm(6), size: 9, font })
-
-  page.drawLine({ start: {x: width - margin - mm(60), y: sigY}, end:{x: width - margin, y: sigY}, thickness: 1, color: rgb(0,0,0)})
-  page.drawText('Firma Manager', { x: width - margin - mm(60), y: sigY - mm(6), size: 9, font })
-
-  // QR code
-  const qrText = hash || JSON.stringify({ commessa: header?.commessa, data: header?.data })
-  const qrDataUrl = await QRCode.toDataURL(qrText, { margin: 0, width: 128 })
-  const qrImageBytes = dataUrlToBytes(qrDataUrl)
-  const qrImage = await pdfDoc.embedPng(qrImageBytes)
-  const qrSize = mm(24)
-  page.drawImage(qrImage, { x: width - margin - qrSize, y: mm(10), width: qrSize, height: qrSize })
-
-  return await pdfDoc.save()
-}
-
-export async function downloadReportinoPDF(props){
-  const bytes = await createReportinoPDF(props)
-  const blob = new Blob([bytes], { type: 'application/pdf' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `Rapportino_${props?.header?.data || ''}.pdf`
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
+function escapeHtml(s='') {
+  return String(s)
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'",'&#039;')
 }
