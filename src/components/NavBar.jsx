@@ -7,8 +7,16 @@ export default function Navbar(){
       <div className="max-w-6xl mx-auto h-14 px-4 flex items-center justify-between">
         <Link to="/" className="font-semibold">CORE</Link>
         <nav className="flex gap-5 text-sm">
-          <NavLink to="/" className={({isActive})=>isActive?'text-slate-900':'text-slate-600 hover:text-slate-900'}>Home</NavLink>
-          <NavLink to="/capo" className={({isActive})=>isActive?'text-slate-900':'text-slate-600 hover:text-slate-900'}>Capo</NavLink>
+          <NavLink to="/" className={({isActive}) =>
+            isActive ? 'text-slate-900' : 'text-slate-600 hover:text-slate-900'
+          }>
+            Home
+          </NavLink>
+          <NavLink to="/capo" className={({isActive}) =>
+            isActive ? 'text-slate-900' : 'text-slate-600 hover:text-slate-900'
+          }>
+            Capo
+          </NavLink>
         </nav>
       </div>
     </header>
