@@ -1,8 +1,7 @@
-import React, { useMemo, useRef, useState } from 'react'
-import { useCapoStore } from '../store/store'
+import React, { useMemo } from 'react'
+import { useCapoStore } from '../store/store'          // peut rester en .ts, Vite transpile
 import { runOCR } from '../lib/ocr'
 import { suggest } from '../lib/catalog'
-import type { Header, Attachment } from '../store/store'
 
 export default function Capo() {
   const {
@@ -16,7 +15,7 @@ export default function Capo() {
     [rows]
   )
 
-  async function onOCR(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onOCR(e) {
     const file = e.target.files?.[0]
     if (!file) return
     const text = await runOCR(file)
@@ -25,14 +24,14 @@ export default function Capo() {
     e.target.value = ''
   }
 
-  async function onAttach(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onAttach(e) {
     const files = Array.from(e.target.files || [])
-    const mapped: Attachment[] = files.map(f => ({ name: f.name, type: f.type, blob: f }))
+    const mapped = files.map(f => ({ name: f.name, type: f.type, blob: f }))
     attach(mapped)
     e.target.value = ''
   }
 
-  const header: Header = {
+  const header = {
     titolo: 'Rapportino Giornaliero',
     commessa: '6313',
     data: new Date().toISOString().slice(0, 10),
@@ -58,7 +57,7 @@ export default function Capo() {
           <div className="mt-2 flex gap-2">
             <button
               onClick={() => normalizeFromText(noteOCR)}
-              disabled={busy || !noteOCR.trim()}
+              disabled={busy || !noteOCR?.trim()}
               className="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-50"
             >
               Normaliser (IA)
@@ -82,7 +81,7 @@ export default function Capo() {
             <Text label="Ore totali" value={String(draft.ore_totali ?? '')} onChange={v => setDraft({ ore_totali: v })} />
             <Text
               label="Operatori (CSV)"
-              value={draft.operatori.join(', ')}
+              value={(draft.operatori || []).join(', ')}
               onChange={(v) => setDraft({ operatori: v.split(',').map(x => x.trim()).filter(Boolean) })}
             />
           </div>
@@ -92,7 +91,7 @@ export default function Capo() {
           <div className="mt-3 flex gap-2">
             <button
               onClick={addRow}
-              disabled={!draft.attivita.trim()}
+              disabled={!draft.attivita?.trim()}
               className="px-3 py-2 rounded bg-green-600 text-white hover:bg-green-500 disabled:opacity-50"
             >
               Ajouter
@@ -124,11 +123,11 @@ export default function Capo() {
               {rows.map((r, i)=>(
                 <tr key={i} className="border-b">
                   <Td>{r.attivita}</Td>
-                  <Td>{r.operatori.join(', ')}</Td>
+                  <Td>{(r.operatori || []).join(', ')}</Td>
                   <Td>{r.zona}</Td>
-                  <Td className="text-right">{r.previsto as any}</Td>
-                  <Td className="text-right">{r.prodotto as any}</Td>
-                  <Td className="text-right">{r.ore_totali as any}</Td>
+                  <Td className="text-right">{r.previsto}</Td>
+                  <Td className="text-right">{r.prodotto}</Td>
+                  <Td className="text-right">{r.ore_totali}</Td>
                   <Td className="text-right">
                     <button onClick={()=>removeRow(i)} className="text-red-600 hover:underline">Suppr.</button>
                   </Td>
@@ -175,19 +174,23 @@ export default function Capo() {
 }
 
 /* ===== UI helpers ===== */
-function Text(props: {label:string; value:string; onChange:(v:string)=>void; placeholder?:string}) {
-  const {label, value, onChange, placeholder} = props
+function Text({label, value, onChange, placeholder}) {
   return (
     <label className="text-sm">
       <div className="text-slate-600 mb-1">{label}</div>
-      <input className="w-full border rounded px-2 py-2" value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>
+      <input
+        className="w-full border rounded px-2 py-2"
+        value={value ?? ''}
+        onChange={e=>onChange(e.target.value)}
+        placeholder={placeholder}
+      />
     </label>
   )
 }
-function Th({children}:{children:React.ReactNode}){ return <th className="text-left font-medium px-3 py-2 text-slate-600">{children}</th>}
-function Td({children,className=''}:{children:React.ReactNode; className?:string}){ return <td className={`px-3 py-2 ${className}`}>{children}</td> }
+function Th({children}){ return <th className="text-left font-medium px-3 py-2 text-slate-600">{children}</th>}
+function Td({children, className=''}){ return <td className={`px-3 py-2 ${className}`}>{children}</td> }
 
-function CatalogSuggest({ value, onPick }:{ value:string; onPick:(it:{code:string; title_it:string})=>void }){
+function CatalogSuggest({ value, onPick }){
   const items = suggest(value)
   if(!value || items.length===0) return null
   return (
