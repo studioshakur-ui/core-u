@@ -1,41 +1,67 @@
-import React, { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-const supabase = (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
-  ? createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
-  : null
+import { supabase, getMyProfile } from '../lib/supabase'
 
 export default function Login(){
   const [email, setEmail] = useState('')
-  const [pwd, setPwd] = useState('')
-  const [err, setErr] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
   const nav = useNavigate()
 
-  async function onLogin(e){
+  useEffect(() => {
+    // si déjà loggé → route par rôle
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      const p = await getMyProfile()
+      if (p?.role === 'capo') nav('/capo', { replace: true })
+      else nav('/', { replace: true })
+    })()
+  }, [nav])
+
+  async function onSubmit(e){
     e.preventDefault()
-    setErr('')
-    if(!supabase){ nav('/capo'); return }
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pwd })
-    if(error){ setErr(error.message); return }
-    nav('/capo')
+    setLoading(true)
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        alert(error.message)
+      } else {
+        const p = await getMyProfile()
+        if (p?.role === 'capo') nav('/capo', { replace: true })
+        else nav('/', { replace: true })
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <main className="max-w-md mx-auto p-6">
-      <form onSubmit={onLogin} className="bg-white border rounded-2xl p-6 space-y-3">
-        <h1 className="text-xl font-semibold">Login Supabase</h1>
-        {err && <div className="text-red-600 text-sm">{err}</div>}
-        <label className="text-sm block">
-          <div className="text-slate-600 mb-1">Email</div>
-          <input className="w-full border rounded px-3 py-2" value={email} onChange={e=>setEmail(e.target.value)} />
+      <h1 className="text-xl font-semibold mb-4">Login</h1>
+      <form onSubmit={onSubmit} className="space-y-3">
+        <label className="block text-sm">
+          <span className="text-slate-600">Email</span>
+          <input
+            className="mt-1 w-full border rounded px-3 py-2"
+            type="email"
+            required
+            value={email}
+            onChange={e=>setEmail(e.target.value)}
+            placeholder="vous@exemple.com"
+          />
         </label>
-        <label className="text-sm block">
-          <div className="text-slate-600 mb-1">Mot de passe</div>
-          <input type="password" className="w-full border rounded px-3 py-2" value={pwd} onChange={e=>setPwd(e.target.value)} />
+        <label className="block text-sm">
+          <span className="text-slate-600">Mot de passe</span>
+          <input
+            className="mt-1 w-full border rounded px-3 py-2"
+            type="password"
+            required
+            value={password}
+            onChange={e=>setPassword(e.target.value)}
+            placeholder="••••••••"
+          />
         </label>
-        <button className="w-full py-2 rounded bg-slate-900 text-white">Se connecter</button>
-      </form>
-    </main>
-  )
-}
+        <button
+          disabled={loading}
+          className="px-4 py-2 rounded bg-slate-900
