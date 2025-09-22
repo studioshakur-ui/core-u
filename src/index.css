@@ -2,7 +2,5 @@
 @tailwind components;
 @tailwind utilities;
 
-/* (optionnel) variables design system */
-:root {
-  --brand: #6b46ff;
-}
+:root { --ring: #6C63FF; }
+*:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }

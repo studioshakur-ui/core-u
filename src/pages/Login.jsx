@@ -1,67 +1,44 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { supabase } from '../lib/supabase.js'
 import { useNavigate } from 'react-router-dom'
-import { supabase, getMyProfile } from '../lib/supabase'
 
-export default function Login(){
+export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const nav = useNavigate()
+  const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
-  useEffect(() => {
-    // si déjà loggé → route par rôle
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) return
-      const p = await getMyProfile()
-      if (p?.role === 'capo') nav('/capo', { replace: true })
-      else nav('/', { replace: true })
-    })()
-  }, [nav])
-
-  async function onSubmit(e){
+  async function onSubmit(e) {
     e.preventDefault()
-    setLoading(true)
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) {
-        alert(error.message)
-      } else {
-        const p = await getMyProfile()
-        if (p?.role === 'capo') nav('/capo', { replace: true })
-        else nav('/', { replace: true })
-      }
-    } finally {
-      setLoading(false)
-    }
+    setError(null)
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) { setError(error.message); return }
+    // fetch role
+    const uid = data.user.id
+    const { data: prof } = await supabase.from('profiles').select('role').eq('id', uid).maybeSingle()
+    const role = prof?.role || 'capo'
+    if (role === 'capo') navigate('/capo')
+    else if (role === 'manager') navigate('/manager')
+    else if (role === 'direzione') navigate('/direzione')
+    else navigate('/')
   }
 
   return (
-    <main className="max-w-md mx-auto p-6">
-      <h1 className="text-xl font-semibold mb-4">Login</h1>
-      <form onSubmit={onSubmit} className="space-y-3">
-        <label className="block text-sm">
-          <span className="text-slate-600">Email</span>
-          <input
-            className="mt-1 w-full border rounded px-3 py-2"
-            type="email"
-            required
-            value={email}
-            onChange={e=>setEmail(e.target.value)}
-            placeholder="vous@exemple.com"
-          />
-        </label>
-        <label className="block text-sm">
-          <span className="text-slate-600">Mot de passe</span>
-          <input
-            className="mt-1 w-full border rounded px-3 py-2"
-            type="password"
-            required
-            value={password}
-            onChange={e=>setPassword(e.target.value)}
-            placeholder="••••••••"
-          />
-        </label>
-        <button
-          disabled={loading}
-          className="px-4 py-2 rounded bg-slate-900
+    <div className="mx-auto max-w-md px-4 py-12">
+      <h2 className="text-2xl font-semibold">Connexion</h2>
+      <p className="text-white/60 text-sm mt-1">Email & password via Supabase</p>
+      <form onSubmit={onSubmit} className="mt-6 space-y-3">
+        <input
+          type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)}
+          className="w-full rounded-lg bg-core-card px-3 py-2 outline-none"
+        />
+        <input
+          type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)}
+          className="w-full rounded-lg bg-core-card px-3 py-2 outline-none"
+        />
+        {error && <div className="text-red-400 text-sm">{error}</div>}
+        <button className="w-full rounded-lg bg-core-violet px-3 py-2 font-medium hover:opacity-90">Entrer</button>
+      </form>
+    </div>
+  )
+}

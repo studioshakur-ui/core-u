@@ -1,33 +1,22 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import Hero from '../components/Hero.jsx'
 
-export default function Home(){
+export default function Home() {
   return (
-    <main className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-2">CORE</h1>
-      <p className="text-slate-600 mb-6">
-        Outil de rapport journalier. Connectez-vous pour accéder à votre interface.
-      </p>
-
-      <div className="flex gap-3">
-        <Link to="/login" className="px-4 py-2 rounded bg-slate-900 text-white hover:bg-slate-800">
-          Login
-        </Link>
-        <Link to="/capo" className="px-4 py-2 rounded border">
-          Aller à Capo (si déjà connecté)
-        </Link>
-      </div>
-
-      <div className="mt-10 text-sm text-slate-500">
-        { /* bouton debug logout utile sur le terrain */ }
-        <button
-          className="underline"
-          onClick={() => supabase.auth.signOut()}
-        >
-          Se déconnecter
-        </button>
-      </div>
+    <main>
+      <Hero />
+      <section id="moduli" className="mx-auto max-w-6xl px-4 py-12 grid md:grid-cols-3 gap-6">
+        {[
+          { title: 'Capo', desc: 'Rapportino giornaliero — inline edit, suggerimenti, controllo ore.'},
+          { title: 'Manager', desc: 'Organigramma, assegnazioni, nuvola operai con ricerca & mass edit.'},
+          { title: 'Direzione', desc: 'KPI settimanali, S vs S-1, export executive PDF.'},
+        ].map((c,i)=>(
+          <div key={i} className="rounded-2xl bg-core-card p-6 shadow-soft">
+            <div className="text-core-violet text-sm mb-2">Modulo</div>
+            <div className="text-xl font-semibold">{c.title}</div>
+            <p className="mt-2 text-white/70 text-sm">{c.desc}</p>
+          </div>
+        ))}
+      </section>
     </main>
   )
 }

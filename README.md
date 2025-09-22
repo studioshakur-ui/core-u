@@ -1,21 +1,29 @@
-# CORE v9.1
+# CORE v10
 
-Version prête à pousser sur GitHub, intégrant :
-
-- Design System homogène (palette violet/gris, échelle typographique, radius/ombres)
-- Catalogo productif (recherche fuzzy, suggestions, favoris)
-- Dashboard Direzione premium (KPIs Δ vs S-1, panneau risques, export executive)
-- Export PDF métier (totaux, signatures, QR code)
-- Base SQL Supabase v9 (RLS Capo/Manager/Direzione)
+Stack: React + Vite + Tailwind, Supabase (Auth + DB), React Router, Chart.js.
+Rôles: `capo`, `manager`, `direzione` stockés dans `profiles.role` (text).
 
 ## Démarrage
 ```bash
-npm install
+npm i
+cp .env.example .env
+# édite .env avec tes clés Supabase + OpenAI
 npm run dev
 ```
 
-## CI/CD
-- GitHub Actions → Netlify (`.github/workflows/deploy.yml`)
+## Supabase
+- Crée un projet.
+- Va dans **Table Editor** et exécute le SQL ci-dessous.
 
-## Export PDF
-- `src/lib/pdf.js` + `<ExportPDFButton />`
+## SQL
+Voir `supabase.sql` dans le repo.
+
+## Routes & ACL
+- `/` Home WOW (public)
+- `/login` Auth
+- `/capo` réservé rôle `capo`
+- `/manager` réservé rôle `manager`
+- `/direzione` réservé rôle `direzione`
+
+## GPT ("Ask CORE")
+- Widget en bas à droite (clé OpenAI requise). Si la clé n'est pas fournie, un fallback local renvoie une réponse simulée.

@@ -1,16 +1,27 @@
-import { Navigate } from "react-router-dom";
-import { useAuthStore } from "../store/authStore.js";
+import { useEffect, useState } from 'react'
+import { Navigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase.js'
 
-export default function ProtectedRoute({ children, allow = [] }) {
-  const { session, profile, loading } = useAuthStore();
-  if (loading) return null; // could show a spinner
+export default function ProtectedRoute({ children, allowed = [] }) {
+  const [state, setState] = useState({ loading: true, allowed: false })
 
-  // If Supabase not configured, dev mode: allow everything
-  if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-    return children;
-  }
+  useEffect(() => {
+    let mounted = true
+    async function check() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        if (mounted) setState({ loading: false, allowed: false })
+        return
+      }
+      const { data: prof } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+      const ok = allowed.includes(prof?.role)
+      if (mounted) setState({ loading: false, allowed: ok })
+    }
+    check()
+    return () => { mounted = false }
+  }, [allowed])
 
-  if (!session) return <Navigate to="/login" replace />;
-  if (allow.length && !allow.includes(profile?.role)) return <Navigate to="/" replace />;
-  return children;
+  if (state.loading) return <div className="p-8 text-sm opacity-70">Chargement…</div>
+  if (!state.allowed) return <Navigate to="/" replace />
+  return children
 }

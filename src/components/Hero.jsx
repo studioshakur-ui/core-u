@@ -1,34 +1,26 @@
-import React from "react";
-
-export default function Hero(){
+export default function Hero() {
   return (
-    <section className="relative min-h-[68vh] md:h-[78vh] overflow-hidden">
-      <img src="/assets/ship1.jpg" alt="" fetchpriority="high"
-           className="absolute inset-0 w-full h-full object-cover opacity-[.22]" />
-      <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_50%_-10%,rgba(139,92,246,.22),transparent_60%)]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[rgba(8,9,14,.85)] via-[rgba(8,9,14,.55)] to-transparent" />
-
-      <div className="relative container-core h-full flex flex-col items-center justify-center text-center">
-        <img src="/assets/brand/core-logo-dark.svg" alt="Core" className="brand-logo md:h-14" />
-        <h1 className="sr-only">CORE — Pianificazione • Reporting • Controllo</h1>
-
-        <p className="mt-6 text-3xl md:text-5xl font-extrabold tracking-tight text-white">
-          Controlla • Organizza • Riporta • Esegui
-        </p>
-
-        <p className="mt-4 text-lg md:text-xl text-white/80 max-w-3xl">
-          Pianificazione turni e cantieri con conflitti in tempo reale, rapportini capi e versionamento tecnico.
-        </p>
-
-        <div className="mt-8 flex items-center gap-3">
-          <a href="#/demo" className="btn btn-primary">Inizia la demo</a>
-          <a href="#main" className="btn btn-ghost">Scopri</a>
+    <section className="relative overflow-hidden bg-[url('/images/hero-blur.png')] bg-cover bg-center">
+      <div className="absolute inset-0 bg-gradient-to-b from-core-violet/20 via-transparent to-transparent pointer-events-none" />
+      <div className="mx-auto max-w-6xl px-4 py-16 grid md:grid-cols-2 gap-8 items-center">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+            CORE v10 — <span className="text-core-violet">Ops</span> navali intelligenti
+          </h1>
+          <p className="mt-4 text-white/70">
+            Accedi, assegna squadre, compila rapportini, e monitora KPI settimanali.
+            UI premium violet/grigio chiaro, performance e accessibilità AA.
+          </p>
+          <div className="mt-6 flex gap-3">
+            <a href="/login" className="rounded-xl2 bg-core-violet px-4 py-2 font-medium hover:opacity-90">Accedi</a>
+            <a href="#moduli" className="rounded-xl2 bg-white/10 px-4 py-2 hover:bg-white/15">Scopri i moduli</a>
+          </div>
         </div>
-
-        <div className="absolute bottom-6 left-0 right-0 flex justify-center">
-          <span className="kbd">Premi <b>J</b> per scorrere</span>
+        <div className="rounded-2xl bg-core-card p-6 shadow-soft">
+          <div className="text-sm text-white/70">Direzione — KPI settimanali (S vs S-1)</div>
+          <div className="mt-4 aspect-video rounded-xl bg-black/30 grid place-items-center text-white/60">Graph Placeholder</div>
         </div>
       </div>
     </section>
-  );
+  )
 }
