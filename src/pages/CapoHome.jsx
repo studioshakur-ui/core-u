@@ -1,48 +1,14 @@
-import { useEffect, useState } from "react";
-import { getSupabase } from "../lib/supabaseClient.js";
-
 export default function CapoHome() {
-  const [team, setTeam] = useState(null);
-  const [acts, setActs] = useState([]);
-  const [err, setErr] = useState(null);
-
-  useEffect(()=>{ (async ()=>{
-    try {
-      const supabase = getSupabase();
-      const { data: t } = await supabase
-        .from("teams")
-        .select("id,name,week_start,status")
-        .eq("status","confirmed")
-        .order("week_start",{ascending:false})
-        .limit(1)
-        .maybeSingle();
-      setTeam(t || null);
-
-      const { data: a } = await supabase
-        .from("activities")
-        .select("id,codice,titolo_it")
-        .limit(100);
-      setActs(a || []);
-    } catch (e) {
-      setErr(e.message || String(e));
-    }
-  })(); },[]);
-
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Benvenuto Capo</h1>
-      {err && <div className="text-red-600">Errore: {err}</div>}
-      <section className="border p-3">
-        <h2 className="font-semibold">Squadra</h2>
-        {team ? <div>{team.name} · {team.week_start}</div> : "Nessuna squadra confermata"}
-      </section>
-      <section className="border p-3">
-        <h2 className="font-semibold">Catalogo Attività</h2>
-        {acts.map(a=>(
-          <div key={a.id}>{a.codice} — {a.titolo_it}</div>
-        ))}
-        {acts.length===0 && <div className="text-gray-500">Nessuna attività visibile.</div>}
-      </section>
+    <div className="p-10 text-center space-y-4">
+      <h2 className="text-3xl font-bold">🧑‍🔧 Capo — Benvenuto</h2>
+      <p className="text-gray-700">Compila il Rapportino giornaliero come sul foglio cartaceo.</p>
+      <a
+        href="/capo/rapportino"
+        className="inline-block px-6 py-3 rounded bg-indigo-600 text-white shadow hover:shadow-lg"
+      >
+        Apri Rapportino
+      </a>
     </div>
   );
 }
