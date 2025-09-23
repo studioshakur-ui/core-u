@@ -1,25 +1,23 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import Home from './pages/Home.jsx'
-import Login from './pages/Login.jsx'
-import Capo from './pages/Capo.jsx'
-import Manager from './pages/Manager.jsx'
-import Direzione from './pages/Direzione.jsx'
-import ImportExcel from './pages/ImportExcel.jsx'
-import Navbar from './components/Navbar.jsx'
-import ProtectedRoute from './components/ProtectedRoute.jsx'
-import Toasts from './components/Toasts.jsx'
-export default function App(){
-  return (<div className="min-h-screen bg-core-bg text-white">
-    <Navbar/>
-    <Routes>
-      <Route path="/" element={<Home/>}/>
-      <Route path="/login" element={<Login/>}/>
-      <Route path="/capo" element={<ProtectedRoute allowed={['capo']}><Capo/></ProtectedRoute>}/>
-      <Route path="/manager" element={<ProtectedRoute allowed={['manager']}><Manager/></ProtectedRoute>}/>
-      <Route path="/direzione" element={<ProtectedRoute allowed={['direzione']}><Direzione/></ProtectedRoute>}/>
-      <Route path="/import" element={<ProtectedRoute allowed={['manager','direzione']}><ImportExcel/></ProtectedRoute>}/>
-      <Route path="*" element={<Navigate to="/" replace/>}/>
-    </Routes>
-    <Toasts/>
-  </div>)
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import ManagerImport from "@/pages/ManagerImport";
+import ManagerTeams from "@/pages/ManagerTeams";
+import CapoHome from "@/pages/CapoHome";
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <div className="p-3 border-b flex gap-3 bg-white">
+        <Link to="/">Home</Link>
+        <Link to="/manager/import">Manager Import</Link>
+        <Link to="/manager/teams">Manager Teams</Link>
+        <Link to="/capo">Capo</Link>
+      </div>
+      <Routes>
+        <Route path="/" element={<div className="p-6">CORE v11 Home WOW</div>} />
+        <Route path="/manager/import" element={<ManagerImport />} />
+        <Route path="/manager/teams" element={<ManagerTeams />} />
+        <Route path="/capo" element={<CapoHome />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
