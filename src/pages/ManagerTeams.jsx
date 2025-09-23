@@ -1,26 +1,25 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { getSupabase } from "../lib/supabaseClient.js";
 
 export default function ManagerTeams() {
   const [rows, setRows] = useState([]);
-  const [membersByTeam, setMembersByTeam] = useState({});
   const [loading, setLoading] = useState(true);
 
   async function load() {
     setLoading(true);
-
+    const supabase = getSupabase();
     const { data: teams } = await supabase
       .from("teams")
       .select("id,name,week_start,status,capo_user_id")
       .order("week_start",{ascending:false});
     setRows(teams||[]);
-
     setLoading(false);
   }
 
   useEffect(()=>{ load(); }, []);
 
   async function setStatus(id, status) {
+    const supabase = getSupabase();
     await supabase.from("teams").update({ status }).eq("id", id);
     load();
   }
