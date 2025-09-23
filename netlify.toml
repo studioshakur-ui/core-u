@@ -1,17 +1,8 @@
-# netlify.toml
-
 [build]
   command = "npm ci --legacy-peer-deps && npm run build"
   publish = "dist"
   functions = "netlify/functions"
 
-# (optionnel) variables de build
-#[build.environment]
-#  VITE_SUPABASE_URL = "https://xxxx.supabase.co"
-#  VITE_SUPABASE_ANON_KEY = "eyJ..." 
-#  VITE_AI_ENABLED = "false"
-
-# SPA redirects
 [[redirects]]
   from = "/*"
   to = "/index.html"
