@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import ManagerImport from "@/pages/ManagerImport";
-import ManagerTeams from "@/pages/ManagerTeams";
-import CapoHome from "@/pages/CapoHome";
+import ManagerImport from "@/pages/ManagerImport.jsx";
+import ManagerTeams from "@/pages/ManagerTeams.jsx";
+import CapoHome from "@/pages/CapoHome.jsx";
 
 export default function App() {
   return (
